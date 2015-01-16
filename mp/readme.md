@@ -1,6 +1,6 @@
 # 微信公众平台 订阅号, 服务号 golang SDK
 
-```golang
+```Go
 // 基本的消息监听程序
 package main
 
