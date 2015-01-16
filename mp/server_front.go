@@ -10,12 +10,13 @@ import (
 	"net/url"
 )
 
-type HttpHandler struct {
+// 实现了 http.Handler, 处理一个公众号的消息
+type WechatServerFront struct {
 	wechatServer          WechatServer
 	invalidRequestHandler InvalidRequestHandler
 }
 
-func NewHttpHandler(wechatServer WechatServer, invalidRequestHandler InvalidRequestHandler) *HttpHandler {
+func NewWechatServerFront(wechatServer WechatServer, invalidRequestHandler InvalidRequestHandler) *WechatServerFront {
 	if wechatServer == nil {
 		panic("mp: nil wechatServer")
 	}
@@ -23,15 +24,15 @@ func NewHttpHandler(wechatServer WechatServer, invalidRequestHandler InvalidRequ
 		invalidRequestHandler = DefaultInvalidRequestHandler
 	}
 
-	return &HttpHandler{
+	return &WechatServerFront{
 		wechatServer:          wechatServer,
 		invalidRequestHandler: invalidRequestHandler,
 	}
 }
 
-func (handler *HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	wechatServer := handler.wechatServer
-	invalidRequestHandler := handler.invalidRequestHandler
+func (front *WechatServerFront) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	wechatServer := front.wechatServer
+	invalidRequestHandler := front.invalidRequestHandler
 
 	urlValues, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
