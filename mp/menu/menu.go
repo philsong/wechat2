@@ -47,101 +47,92 @@ type Button struct {
 	SubButtons []Button `json:"sub_button,omitempty"` // 非必须; 二级菜单数组，个数应为1~5个
 }
 
-// 初始化 btn 指向的 Button 为 子菜单 类型按钮
-func (btn *Button) InitToSubMenuButton(name string, subButtons []Button) {
+// 设置 btn 指向的 Button 为 子菜单 类型按钮
+func (btn *Button) SetAsSubMenuButton(name string, subButtons []Button) {
 	btn.Name = name
 	btn.SubButtons = subButtons
 
-	// 容错性考虑, 清除其他字段
 	btn.Type = ""
 	btn.Key = ""
 	btn.URL = ""
 }
 
-// 初始化 btn 指向的 Button 为 click 类型按钮
-func (btn *Button) InitToClickButton(name, key string) {
+// 设置 btn 指向的 Button 为 click 类型按钮
+func (btn *Button) SetAsClickButton(name, key string) {
 	btn.Name = name
 	btn.Type = BUTTON_TYPE_CLICK
 	btn.Key = key
 
-	// 容错性考虑, 清除其他字段
 	btn.URL = ""
 	btn.SubButtons = nil
 }
 
-// 初始化 btn 指向的 Button 为 view 类型按钮
-func (btn *Button) InitToViewButton(name, url string) {
+// 设置 btn 指向的 Button 为 view 类型按钮
+func (btn *Button) SetAsViewButton(name, url string) {
 	btn.Name = name
 	btn.Type = BUTTON_TYPE_VIEW
 	btn.URL = url
 
-	// 容错性考虑, 清除其他字段
 	btn.Key = ""
 	btn.SubButtons = nil
 }
 
-// 初始化 btn 指向的 Button 为 扫码推事件 类型按钮
-func (btn *Button) InitToScanCodePushButton(name, key string) {
+// 设置 btn 指向的 Button 为 扫码推事件 类型按钮
+func (btn *Button) SetAsScanCodePushButton(name, key string) {
 	btn.Name = name
 	btn.Type = BUTTON_TYPE_SCANCODE_PUSH
 	btn.Key = key
 
-	// 容错性考虑, 清除其他字段
 	btn.URL = ""
 	btn.SubButtons = nil
 }
 
-// 初始化 btn 指向的 Button 为 扫码推事件且弹出“消息接收中”提示框 类型按钮
-func (btn *Button) InitToScanCodeWaitMsgButton(name, key string) {
+// 设置 btn 指向的 Button 为 扫码推事件且弹出“消息接收中”提示框 类型按钮
+func (btn *Button) SetAsScanCodeWaitMsgButton(name, key string) {
 	btn.Name = name
 	btn.Type = BUTTON_TYPE_SCANCODE_WAITMSG
 	btn.Key = key
 
-	// 容错性考虑, 清除其他字段
 	btn.URL = ""
 	btn.SubButtons = nil
 }
 
-// 初始化 btn 指向的 Button 为 弹出系统拍照发图 类型按钮
-func (btn *Button) InitToPicSysPhotoButton(name, key string) {
+// 设置 btn 指向的 Button 为 弹出系统拍照发图 类型按钮
+func (btn *Button) SetAsPicSysPhotoButton(name, key string) {
 	btn.Name = name
 	btn.Type = BUTTON_TYPE_PIC_SYSPHOTO
 	btn.Key = key
 
-	// 容错性考虑, 清除其他字段
 	btn.URL = ""
 	btn.SubButtons = nil
 }
 
-// 初始化 btn 指向的 Button 为 弹出拍照或者相册发图 类型按钮
-func (btn *Button) InitToPicPhotoOrAlbumButton(name, key string) {
+// 设置 btn 指向的 Button 为 弹出拍照或者相册发图 类型按钮
+func (btn *Button) SetAsPicPhotoOrAlbumButton(name, key string) {
 	btn.Name = name
 	btn.Type = BUTTON_TYPE_PIC_PHOTO_OR_ALBUM
 	btn.Key = key
 
-	// 容错性考虑, 清除其他字段
 	btn.URL = ""
 	btn.SubButtons = nil
 }
 
-// 初始化 btn 指向的 Button 为 弹出微信相册发图器 类型按钮
-func (btn *Button) InitToPicWeixinButton(name, key string) {
+// 设置 btn 指向的 Button 为 弹出微信相册发图器 类型按钮
+func (btn *Button) SetAsPicWeixinButton(name, key string) {
 	btn.Name = name
 	btn.Type = BUTTON_TYPE_PIC_WEIXIN
 	btn.Key = key
 
-	// 容错性考虑, 清除其他字段
 	btn.URL = ""
 	btn.SubButtons = nil
 }
 
-// 初始化 btn 指向的 Button 为 弹出地理位置选择器 类型按钮
-func (btn *Button) InitToLocationSelectButton(name, key string) {
+// 设置 btn 指向的 Button 为 弹出地理位置选择器 类型按钮
+func (btn *Button) SetAsLocationSelectButton(name, key string) {
 	btn.Name = name
 	btn.Type = BUTTON_TYPE_LOCATION_SELECT
 	btn.Key = key
 
-	// 容错性考虑, 清除其他字段
 	btn.URL = ""
 	btn.SubButtons = nil
 }

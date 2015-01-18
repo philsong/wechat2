@@ -95,11 +95,16 @@ func (clt *WechatClient) GetNewToken() (token string, err error) {
 
 // 用 encoding/json 把 request marshal 为 JSON, 放入 http 请求的 body 中,
 // POST 到微信服务器, 然后将微信服务器返回的 JSON 用 encoding/json 解析到 response.
-//  最终的 URL == incompleteURL + access_token.
+//
+//  NOTE:
+//  1. 一般不用调用这个方法, 请直接调用高层次的封装方法;
+//  2. 最终的 URL == incompleteURL + access_token;
+//  3. response 要求是 struct 的指针, 并且有该 struct 拥有这个属性:
+//     ErrCode int `json:"errcode"`
 func (clt *WechatClient) PostJSON(incompleteURL string, request interface{}, response interface{}) (err error) {
-	buf := textBufferPool.Get().(*bytes.Buffer) // io.ReadWriter
+	buf := TextBufferPool.Get().(*bytes.Buffer) // io.ReadWriter
 	buf.Reset()                                 // important
-	defer textBufferPool.Put(buf)               // important
+	defer TextBufferPool.Put(buf)               // important
 
 	if err = wechatjson.NewEncoder(buf).Encode(request); err != nil {
 		return
@@ -160,7 +165,12 @@ RETRY:
 }
 
 // GET 微信资源, 然后将微信服务器返回的 JSON 用 encoding/json 解析到 response.
-//  最终的 URL == incompleteURL + access_token.
+//
+//  NOTE:
+//  1. 一般不用调用这个方法, 请直接调用高层次的封装方法;
+//  2. 最终的 URL == incompleteURL + access_token;
+//  3. response 要求是 struct 的指针, 并且有该 struct 拥有这个属性:
+//     ErrCode int `json:"errcode"`
 func (clt *WechatClient) GetJSON(incompleteURL string, response interface{}) (err error) {
 	token, err := clt.Token()
 	if err != nil {

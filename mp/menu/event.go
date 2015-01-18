@@ -32,11 +32,11 @@ type ClickEvent struct {
 	EventKey string `xml:"EventKey" json:"EventKey"` // 事件KEY值, 与自定义菜单接口中KEY值对应
 }
 
-func GetClickEvent(mixedMsg *mp.MixedMessage) *ClickEvent {
+func GetClickEvent(msg *mp.MixedMessage) *ClickEvent {
 	return &ClickEvent{
-		CommonMsgHead: mixedMsg.CommonMsgHead,
-		Event:         mixedMsg.Event,
-		EventKey:      mixedMsg.EventKey,
+		CommonMsgHead: msg.CommonMsgHead,
+		Event:         msg.Event,
+		EventKey:      msg.EventKey,
 	}
 }
 
@@ -49,11 +49,11 @@ type ViewEvent struct {
 	EventKey string `xml:"EventKey" json:"EventKey"` // 事件KEY值, 设置的跳转URL
 }
 
-func GetViewEvent(mixedMsg *mp.MixedMessage) *ViewEvent {
+func GetViewEvent(msg *mp.MixedMessage) *ViewEvent {
 	return &ViewEvent{
-		CommonMsgHead: mixedMsg.CommonMsgHead,
-		Event:         mixedMsg.Event,
-		EventKey:      mixedMsg.EventKey,
+		CommonMsgHead: msg.CommonMsgHead,
+		Event:         msg.Event,
+		EventKey:      msg.EventKey,
 	}
 }
 
@@ -71,12 +71,12 @@ type ScanCodePushEvent struct {
 	} `xml:"ScanCodeInfo" json:"ScanCodeInfo"`
 }
 
-func GetScanCodePushEvent(mixedMsg *mp.MixedMessage) *ScanCodePushEvent {
+func GetScanCodePushEvent(msg *mp.MixedMessage) *ScanCodePushEvent {
 	return &ScanCodePushEvent{
-		CommonMsgHead: mixedMsg.CommonMsgHead,
-		Event:         mixedMsg.Event,
-		EventKey:      mixedMsg.EventKey,
-		ScanCodeInfo:  mixedMsg.ScanCodeInfo,
+		CommonMsgHead: msg.CommonMsgHead,
+		Event:         msg.Event,
+		EventKey:      msg.EventKey,
+		ScanCodeInfo:  msg.ScanCodeInfo,
 	}
 }
 
@@ -94,12 +94,12 @@ type ScanCodeWaitMsgEvent struct {
 	} `xml:"ScanCodeInfo" json:"ScanCodeInfo"`
 }
 
-func GetScanCodeWaitMsgEvent(mixedMsg *mp.MixedMessage) *ScanCodeWaitMsgEvent {
+func GetScanCodeWaitMsgEvent(msg *mp.MixedMessage) *ScanCodeWaitMsgEvent {
 	return &ScanCodeWaitMsgEvent{
-		CommonMsgHead: mixedMsg.CommonMsgHead,
-		Event:         mixedMsg.Event,
-		EventKey:      mixedMsg.EventKey,
-		ScanCodeInfo:  mixedMsg.ScanCodeInfo,
+		CommonMsgHead: msg.CommonMsgHead,
+		Event:         msg.Event,
+		EventKey:      msg.EventKey,
+		ScanCodeInfo:  msg.ScanCodeInfo,
 	}
 }
 
@@ -119,12 +119,12 @@ type PicSysPhotoEvent struct {
 	} `xml:"SendPicsInfo" json:"SendPicsInfo"` // 发送的图片信息
 }
 
-func GetPicSysPhotoEvent(mixedMsg *mp.MixedMessage) *PicSysPhotoEvent {
+func GetPicSysPhotoEvent(msg *mp.MixedMessage) *PicSysPhotoEvent {
 	return &PicSysPhotoEvent{
-		CommonMsgHead: mixedMsg.CommonMsgHead,
-		Event:         mixedMsg.Event,
-		EventKey:      mixedMsg.EventKey,
-		SendPicsInfo:  mixedMsg.SendPicsInfo,
+		CommonMsgHead: msg.CommonMsgHead,
+		Event:         msg.Event,
+		EventKey:      msg.EventKey,
+		SendPicsInfo:  msg.SendPicsInfo,
 	}
 }
 
@@ -144,12 +144,12 @@ type PicPhotoOrAlbumEvent struct {
 	} `xml:"SendPicsInfo" json:"SendPicsInfo"` // 发送的图片信息
 }
 
-func GetPicPhotoOrAlbumEvent(mixedMsg *mp.MixedMessage) *PicPhotoOrAlbumEvent {
+func GetPicPhotoOrAlbumEvent(msg *mp.MixedMessage) *PicPhotoOrAlbumEvent {
 	return &PicPhotoOrAlbumEvent{
-		CommonMsgHead: mixedMsg.CommonMsgHead,
-		Event:         mixedMsg.Event,
-		EventKey:      mixedMsg.EventKey,
-		SendPicsInfo:  mixedMsg.SendPicsInfo,
+		CommonMsgHead: msg.CommonMsgHead,
+		Event:         msg.Event,
+		EventKey:      msg.EventKey,
+		SendPicsInfo:  msg.SendPicsInfo,
 	}
 }
 
@@ -169,12 +169,12 @@ type PicWeixinEvent struct {
 	} `xml:"SendPicsInfo" json:"SendPicsInfo"` // 发送的图片信息
 }
 
-func GetPicWeixinEvent(mixedMsg *mp.MixedMessage) *PicWeixinEvent {
+func GetPicWeixinEvent(msg *mp.MixedMessage) *PicWeixinEvent {
 	return &PicWeixinEvent{
-		CommonMsgHead: mixedMsg.CommonMsgHead,
-		Event:         mixedMsg.Event,
-		EventKey:      mixedMsg.EventKey,
-		SendPicsInfo:  mixedMsg.SendPicsInfo,
+		CommonMsgHead: msg.CommonMsgHead,
+		Event:         msg.Event,
+		EventKey:      msg.EventKey,
+		SendPicsInfo:  msg.SendPicsInfo,
 	}
 }
 
@@ -195,11 +195,11 @@ type LocationSelectEvent struct {
 	} `xml:"SendLocationInfo" json:"SendLocationInfo"` // 发送的位置信息
 }
 
-func GetLocationSelectEvent(mixedMsg *mp.MixedMessage) *LocationSelectEvent {
+func GetLocationSelectEvent(msg *mp.MixedMessage) *LocationSelectEvent {
 	return &LocationSelectEvent{
-		CommonMsgHead:    mixedMsg.CommonMsgHead,
-		Event:            mixedMsg.Event,
-		EventKey:         mixedMsg.EventKey,
-		SendLocationInfo: mixedMsg.SendLocationInfo,
+		CommonMsgHead:    msg.CommonMsgHead,
+		Event:            msg.Event,
+		EventKey:         msg.EventKey,
+		SendLocationInfo: msg.SendLocationInfo,
 	}
 }
