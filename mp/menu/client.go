@@ -37,72 +37,32 @@ func NewClient(TokenService mp.TokenService, HttpClient *http.Client) *Client {
 func (clt *Client) CreateMenu(menu Menu) (err error) {
 	var result mp.Error
 
-	token, err := clt.Token()
-	if err != nil {
+	incompleteURL := "https://api.weixin.qq.com/cgi-bin/menu/create?access_token="
+	if err = clt.PostJSON(incompleteURL, menu, &result); err != nil {
 		return
 	}
 
-	hasRetried := false
-RETRY:
-	url := "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + token
-
-	if err = clt.PostJSON(url, menu, &result); err != nil {
-		return
-	}
-
-	switch result.ErrCode {
-	case mp.ErrCodeOK:
-		return
-	case mp.ErrCodeInvalidCredential, mp.ErrCodeTimeout:
-		if !hasRetried {
-			hasRetried = true
-
-			if token, err = clt.GetNewToken(); err != nil {
-				return
-			}
-			goto RETRY
-		}
-		fallthrough
-	default:
+	if result.ErrCode != mp.ErrCodeOK {
 		err = &result
 		return
 	}
+	return
 }
 
 // 删除自定义菜单
 func (clt *Client) DeleteMenu() (err error) {
 	var result mp.Error
 
-	token, err := clt.Token()
-	if err != nil {
+	incompleteURL := "https://api.weixin.qq.com/cgi-bin/menu/delete?access_token="
+	if err = clt.GetJSON(incompleteURL, &result); err != nil {
 		return
 	}
 
-	hasRetried := false
-RETRY:
-	url := "https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=" + token
-
-	if err = clt.GetJSON(url, &result); err != nil {
-		return
-	}
-
-	switch result.ErrCode {
-	case mp.ErrCodeOK:
-		return
-	case mp.ErrCodeInvalidCredential, mp.ErrCodeTimeout:
-		if !hasRetried {
-			hasRetried = true
-
-			if token, err = clt.GetNewToken(); err != nil {
-				return
-			}
-			goto RETRY
-		}
-		fallthrough
-	default:
+	if result.ErrCode != mp.ErrCodeOK {
 		err = &result
 		return
 	}
+	return
 }
 
 // 获取自定义菜单
@@ -112,35 +72,15 @@ func (clt *Client) GetMenu() (menu Menu, err error) {
 		Menu Menu `json:"menu"`
 	}
 
-	token, err := clt.Token()
-	if err != nil {
+	incompleteURL := "https://api.weixin.qq.com/cgi-bin/menu/get?access_token="
+	if err = clt.GetJSON(incompleteURL, &result); err != nil {
 		return
 	}
 
-	hasRetried := false
-RETRY:
-	url := "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=" + token
-
-	if err = clt.GetJSON(url, &result); err != nil {
-		return
-	}
-
-	switch result.ErrCode {
-	case mp.ErrCodeOK:
-		menu = result.Menu
-		return
-	case mp.ErrCodeInvalidCredential, mp.ErrCodeTimeout:
-		if !hasRetried {
-			hasRetried = true
-
-			if token, err = clt.GetNewToken(); err != nil {
-				return
-			}
-			goto RETRY
-		}
-		fallthrough
-	default:
+	if result.ErrCode != mp.ErrCodeOK {
 		err = &result.Error
 		return
 	}
+	menu = result.Menu
+	return
 }

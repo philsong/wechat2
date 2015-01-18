@@ -18,25 +18,25 @@ const URLQueryWechatKeyName = "wechatkey"
 // 多个 WechatServer 的前端, 负责处理 http 请求, net/http.Handler 的实现
 //
 //  NOTE:
-//  MultiWechatServerFront 可以处理多个公众号的消息（事件），但是要求在回调 URL 上加上一个
-//  查询参数，参考常量 URLQueryWechatKeyName，这个参数的值就是 MultiWechatServerFront
+//  MultiWechatServerFrontend 可以处理多个公众号的消息（事件），但是要求在回调 URL 上加上一个
+//  查询参数，参考常量 URLQueryWechatKeyName，这个参数的值就是 MultiWechatServerFrontend
 //  索引 WechatServer 的 key。
 //
 //  例如回调 URL 为 http://www.xxx.com/weixin?wechatkey=1234567890，那么就可以在后端调用
 //
-//    MultiWechatServerFront.SetWechatServer("1234567890", WechatServer)
+//    MultiWechatServerFrontend.SetWechatServer("1234567890", WechatServer)
 //
 //  来增加一个 WechatServer 来处理 wechatkey=1234567890 的消息（事件）。
 //
-//  MultiWechatServerFront 并发安全，可以在运行中动态增加和删除 WechatServer。
-type MultiWechatServerFront struct {
+//  MultiWechatServerFrontend 并发安全，可以在运行中动态增加和删除 WechatServer。
+type MultiWechatServerFrontend struct {
 	rwmutex               sync.RWMutex
 	wechatServerMap       map[string]WechatServer
 	invalidRequestHandler InvalidRequestHandler
 }
 
 // 设置 InvalidRequestHandler, 如果 handler == nil 则使用默认的 DefaultInvalidRequestHandler
-func (front *MultiWechatServerFront) SetInvalidRequestHandler(handler InvalidRequestHandler) {
+func (front *MultiWechatServerFrontend) SetInvalidRequestHandler(handler InvalidRequestHandler) {
 	front.rwmutex.Lock()
 	defer front.rwmutex.Unlock()
 
@@ -48,7 +48,7 @@ func (front *MultiWechatServerFront) SetInvalidRequestHandler(handler InvalidReq
 }
 
 // 添加（设置） wechatkey-WechatServer pair, 如果 wechatServer == nil 则不做任何操作
-func (front *MultiWechatServerFront) SetWechatServer(wechatkey string, wechatServer WechatServer) {
+func (front *MultiWechatServerFrontend) SetWechatServer(wechatkey string, wechatServer WechatServer) {
 	if wechatkey == "" {
 		return
 	}
@@ -66,7 +66,7 @@ func (front *MultiWechatServerFront) SetWechatServer(wechatkey string, wechatSer
 }
 
 // 删除 wechatkey 对应的 WechatServer
-func (front *MultiWechatServerFront) DeleteWechatServer(wechatkey string) {
+func (front *MultiWechatServerFrontend) DeleteWechatServer(wechatkey string) {
 	front.rwmutex.Lock()
 	defer front.rwmutex.Unlock()
 
@@ -74,14 +74,14 @@ func (front *MultiWechatServerFront) DeleteWechatServer(wechatkey string) {
 }
 
 // 删除所有的 WechatServer
-func (front *MultiWechatServerFront) DeleteAllWechatServer() {
+func (front *MultiWechatServerFrontend) DeleteAllWechatServer() {
 	front.rwmutex.Lock()
 	defer front.rwmutex.Unlock()
 
 	front.wechatServerMap = make(map[string]WechatServer)
 }
 
-func (front *MultiWechatServerFront) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (front *MultiWechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	urlValues, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
 		front.rwmutex.RLock()

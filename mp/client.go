@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
 	"time"
 
 	wechatjson "github.com/chanxuehong/wechatv2/json"
@@ -24,12 +25,9 @@ type WechatClient struct {
 
 // 获取 access token.
 func (clt *WechatClient) Token() (token string, err error) {
-	if clt.accessToken != "" {
-		token = clt.accessToken
-		return
-	}
 	token, err = clt.TokenService.Token()
 	if err != nil {
+		clt.accessToken = ""
 		return
 	}
 	clt.accessToken = token
@@ -45,6 +43,7 @@ func (clt *WechatClient) Token() (token string, err error) {
 func (clt *WechatClient) TokenRefresh() (token string, err error) {
 	token, err = clt.TokenService.TokenRefresh()
 	if err != nil {
+		clt.accessToken = ""
 		return
 	}
 	clt.accessToken = token
@@ -58,6 +57,7 @@ func (clt *WechatClient) GetNewToken() (token string, err error) {
 	for i := 0; ; {
 		token, err = clt.TokenService.Token()
 		if err != nil {
+			clt.accessToken = ""
 			return
 		}
 		if clt.accessToken != token {
@@ -76,9 +76,10 @@ func (clt *WechatClient) GetNewToken() (token string, err error) {
 	return
 }
 
-// 把 request marshal 为 JSON, 放入 http 请求的 body 中, POST 到微信服务器 url 上,
-// 然后把微信服务器返回的 JSON 解析到 response.
-func (clt *WechatClient) PostJSON(url string, request interface{}, response interface{}) (err error) {
+// 用 encoding/json 把 request marshal 为 JSON, 放入 http 请求的 body 中,
+// POST 到微信服务器, 然后将微信服务器返回的 JSON 用 encoding/json 解析到 response.
+//  最终的 URL == incompleteURL + access_token.
+func (clt *WechatClient) PostJSON(incompleteURL string, request interface{}, response interface{}) (err error) {
 	buf := textBufferPool.Get().(*bytes.Buffer) // io.ReadWriter
 	buf.Reset()                                 // important
 	defer textBufferPool.Put(buf)               // important
@@ -86,8 +87,18 @@ func (clt *WechatClient) PostJSON(url string, request interface{}, response inte
 	if err = wechatjson.NewEncoder(buf).Encode(request); err != nil {
 		return
 	}
+	requestBytes := buf.Bytes()
 
-	httpResp, err := clt.HttpClient.Post(url, "application/json; charset=utf-8", buf)
+	token, err := clt.Token()
+	if err != nil {
+		return
+	}
+
+	hasRetried := false
+RETRY:
+	finalURL := incompleteURL + token
+
+	httpResp, err := clt.HttpClient.Post(finalURL, "application/json; charset=utf-8", bytes.NewReader(requestBytes))
 	if err != nil {
 		return
 	}
@@ -99,12 +110,51 @@ func (clt *WechatClient) PostJSON(url string, request interface{}, response inte
 	if err = json.NewDecoder(httpResp.Body).Decode(response); err != nil {
 		return
 	}
-	return
+
+	// 请注意:
+	// 下面获取 ErrCode 的代码不具备通用性!!!
+	//
+	// 因为本 SDK 的 response 都是
+	//  struct {
+	//    Error
+	//    XXX
+	//  }
+	// 的结构, 所以用下面简单的方法得到 ErrCode.
+	//
+	// 如果你是直接调用这个函数, 那么要根据你的 response 数据结构修改下面的代码.
+	ErrCode := reflect.ValueOf(response).Elem().FieldByName("ErrCode").Int()
+
+	switch ErrCode {
+	case ErrCodeOK:
+		return
+	case ErrCodeInvalidCredential, ErrCodeTimeout: // 失效(过期)重试一次
+		if !hasRetried {
+			hasRetried = true
+
+			if token, err = clt.GetNewToken(); err != nil {
+				return
+			}
+			goto RETRY
+		}
+		fallthrough
+	default:
+		return
+	}
 }
 
-// GET 微信资源 url, 把微信服务器返回的 JSON 解析到 response.
-func (clt *WechatClient) GetJSON(url string, response interface{}) (err error) {
-	httpResp, err := clt.HttpClient.Get(url)
+// GET 微信资源, 然后将微信服务器返回的 JSON 用 encoding/json 解析到 response.
+//  最终的 URL == incompleteURL + access_token.
+func (clt *WechatClient) GetJSON(incompleteURL string, response interface{}) (err error) {
+	token, err := clt.Token()
+	if err != nil {
+		return
+	}
+
+	hasRetried := false
+RETRY:
+	finalURL := incompleteURL + token
+
+	httpResp, err := clt.HttpClient.Get(finalURL)
 	if err != nil {
 		return
 	}
@@ -116,5 +166,34 @@ func (clt *WechatClient) GetJSON(url string, response interface{}) (err error) {
 	if err = json.NewDecoder(httpResp.Body).Decode(response); err != nil {
 		return
 	}
-	return
+
+	// 请注意:
+	// 下面获取 ErrCode 的代码不具备通用性!!!
+	//
+	// 因为本 SDK 的 response 都是
+	//  struct {
+	//    Error
+	//    XXX
+	//  }
+	// 的结构, 所以用下面简单的方法得到 ErrCode.
+	//
+	// 如果你是直接调用这个函数, 那么要根据你的 response 数据结构修改下面的代码.
+	ErrCode := reflect.ValueOf(response).Elem().FieldByName("ErrCode").Int()
+
+	switch ErrCode {
+	case ErrCodeOK:
+		return
+	case ErrCodeInvalidCredential, ErrCodeTimeout: // 失效(过期)重试一次
+		if !hasRetried {
+			hasRetried = true
+
+			if token, err = clt.GetNewToken(); err != nil {
+				return
+			}
+			goto RETRY
+		}
+		fallthrough
+	default:
+		return
+	}
 }
