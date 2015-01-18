@@ -8,8 +8,8 @@ package mp
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"reflect"
 	"time"
@@ -50,10 +50,27 @@ func (clt *WechatClient) TokenRefresh() (token string, err error) {
 	return
 }
 
-// 当 WechatClient.Token() 返回的 token 失效时获取新的 token.
+var mathRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+// 获取一个 [3, 10) 的随机数
+func getRetryNum() (n int) {
+	for n < 3 {
+		n = mathRand.Intn(10)
+	}
+	return
+}
+
+// 当 WechatClient.Token() 返回的 access_token 失效时获取新的 access_token.
 func (clt *WechatClient) GetNewToken() (token string, err error) {
-	// 当 TokenService 伺服程序更新了 access token, 但是缓存里还没有更新的时候就会产生失效,
-	// 这个时候需要去 TokenService 获取新的 access token.
+	// 失效有两种可能:
+	// 1. 中控服务器更新了 access_token, 但是没有及时更新到缓存, 导致此次 WechatClient.Token()
+	//    获取到的不是有效的 access_token (目前这种情况基本不会出现, 微信服务器兼容更新时刻
+	//    多个 access_token 都有效);
+	// 2. 就是微信服务器主动失效了 access_token, 但是中控服务器不知道这个情况而没有及时更新
+	//    access_token, 所以这个时候就需要主动刷新 access_token.
+
+	// 先从中控服务器尝试获取新的 access_token, 每隔 50ms 尝试一次, 尝试 retryNum 次.
+	retryNum := getRetryNum() // 获取 [3, 10) 的一个随机整数
 	for i := 0; ; {
 		token, err = clt.TokenService.Token()
 		if err != nil {
@@ -65,15 +82,15 @@ func (clt *WechatClient) GetNewToken() (token string, err error) {
 			return
 		}
 
-		if i++; i < 10 {
+		if i++; i < retryNum {
 			time.Sleep(50 * time.Millisecond) // 等待 50ms 再次获取
 			continue
 		}
 		break
 	}
 
-	err = errors.New("WechatClient.GetNewToken failed")
-	return
+	// 应该是微信主动失效了 access_token, 刷新 access_token
+	return clt.TokenRefresh()
 }
 
 // 用 encoding/json 把 request marshal 为 JSON, 放入 http 请求的 body 中,
