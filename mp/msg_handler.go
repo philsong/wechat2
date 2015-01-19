@@ -60,7 +60,7 @@ type Request struct {
 }
 
 // 微信服务器推送过来的消息(事件)通用的消息头
-type CommonMsgHead struct {
+type CommonMessageHeader struct {
 	ToUserName   string `xml:"ToUserName"   json:"ToUserName"`
 	FromUserName string `xml:"FromUserName" json:"FromUserName"`
 	CreateTime   int64  `xml:"CreateTime"   json:"CreateTime"`
@@ -69,7 +69,7 @@ type CommonMsgHead struct {
 
 type MixedMessage struct {
 	XMLName struct{} `xml:"xml" json:"-"`
-	CommonMsgHead
+	CommonMessageHeader
 
 	// fuck, MsgId != MsgID
 	MsgId int64 `xml:"MsgId" json:"MsgId"`

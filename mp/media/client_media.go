@@ -18,26 +18,26 @@ import (
 )
 
 // 下载多媒体到文件.
-func (clt *Client) MediaDownload(mediaId, _filepath string) (err error) {
+func (clt *Client) DownloadMedia(mediaId, _filepath string) (err error) {
 	file, err := os.Create(_filepath)
 	if err != nil {
 		return
 	}
 	defer file.Close()
 
-	return clt.mediaDownloadToWriter(mediaId, file)
+	return clt.downloadMediaToWriter(mediaId, file)
 }
 
 // 下载多媒体到 io.Writer.
-func (clt *Client) MediaDownloadToWriter(mediaId string, writer io.Writer) error {
+func (clt *Client) DownloadMediaToWriter(mediaId string, writer io.Writer) error {
 	if writer == nil {
 		return errors.New("nil writer")
 	}
-	return clt.mediaDownloadToWriter(mediaId, writer)
+	return clt.downloadMediaToWriter(mediaId, writer)
 }
 
 // 下载多媒体到 io.Writer.
-func (clt *Client) mediaDownloadToWriter(mediaId string, writer io.Writer) (err error) {
+func (clt *Client) downloadMediaToWriter(mediaId string, writer io.Writer) (err error) {
 	token, err := clt.Token()
 	if err != nil {
 		return
@@ -92,7 +92,7 @@ RETRY:
 
 // 根据上传的缩略图媒体创建图文消息素材.
 //  articles 的长度不能大于 NewsArticleCountLimit.
-func (clt *Client) MediaCreateNews(articles []NewsArticle) (info *MediaInfo, err error) {
+func (clt *Client) CreateNews(articles []NewsArticle) (info *MediaInfo, err error) {
 	if len(articles) == 0 {
 		err = errors.New("图文消息是空的")
 		return
@@ -128,7 +128,7 @@ func (clt *Client) MediaCreateNews(articles []NewsArticle) (info *MediaInfo, err
 
 // 根据上传的视频文件 media_id 创建视频媒体, 群发视频消息应该用这个函数得到的 media_id.
 //  NOTE: title, description 可以为空.
-func (clt *Client) MediaCreateVideo(mediaId, title, description string) (info *MediaInfo, err error) {
+func (clt *Client) CreateVideo(mediaId, title, description string) (info *MediaInfo, err error) {
 	var request = struct {
 		MediaId     string `json:"media_id"`
 		Title       string `json:"title,omitempty"`

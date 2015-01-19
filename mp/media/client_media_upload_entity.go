@@ -45,30 +45,30 @@ func escapeQuotes(s string) string {
 	return quoteEscaper.Replace(s)
 }
 
-func mediaUploadURL(mediatype, accesstoken string) string {
+func uploadMediaURL(mediatype, accesstoken string) string {
 	return "http://file.api.weixin.qq.com/cgi-bin/media/upload?type=" + mediatype +
 		"&access_token=" + accesstoken
 }
 
 // 上传多媒体
-func (clt *Client) mediaUploadFromReader(mediaType, filename string, reader io.Reader) (info *MediaInfo, err error) {
+func (clt *Client) uploadMediaFromReader(mediaType, filename string, reader io.Reader) (info *MediaInfo, err error) {
 	filename = escapeQuotes(filename)
 
 	switch v := reader.(type) {
 	case *os.File:
-		return clt.mediaUploadFromOSFile(mediaType, filename, v)
+		return clt.uploadMediaFromOSFile(mediaType, filename, v)
 	case *bytes.Buffer:
-		return clt.mediaUploadFromBytesBuffer(mediaType, filename, v)
+		return clt.uploadMediaFromBytesBuffer(mediaType, filename, v)
 	case *bytes.Reader:
-		return clt.mediaUploadFromBytesReader(mediaType, filename, v)
+		return clt.uploadMediaFromBytesReader(mediaType, filename, v)
 	case *strings.Reader:
-		return clt.mediaUploadFromStringsReader(mediaType, filename, v)
+		return clt.uploadMediaFromStringsReader(mediaType, filename, v)
 	default:
-		return clt.mediaUploadFromIOReader(mediaType, filename, v)
+		return clt.uploadMediaFromIOReader(mediaType, filename, v)
 	}
 }
 
-func (clt *Client) mediaUploadFromOSFile(mediaType, filename string, file *os.File) (info *MediaInfo, err error) {
+func (clt *Client) uploadMediaFromOSFile(mediaType, filename string, file *os.File) (info *MediaInfo, err error) {
 	fi, err := file.Stat()
 	if err != nil {
 		return
@@ -76,7 +76,7 @@ func (clt *Client) mediaUploadFromOSFile(mediaType, filename string, file *os.Fi
 
 	// 非常规文件, FileInfo.Size() 不一定准确
 	if !fi.Mode().IsRegular() {
-		return clt.mediaUploadFromIOReader(mediaType, filename, file)
+		return clt.uploadMediaFromIOReader(mediaType, filename, file)
 	}
 
 	originalOffset, err := file.Seek(0, 1)
@@ -93,7 +93,7 @@ func (clt *Client) mediaUploadFromOSFile(mediaType, filename string, file *os.Fi
 
 	hasRetried := false
 RETRY:
-	finalURL := mediaUploadURL(mediaType, token)
+	finalURL := uploadMediaURL(mediaType, token)
 
 	if hasRetried {
 		if _, err = file.Seek(originalOffset, 0); err != nil {
@@ -127,7 +127,7 @@ RETRY:
 	}
 
 	switch mediaType {
-	case MEDIA_TYPE_THUMB: // 返回的是 thumb_media_id 而不是 media_id
+	case MediaTypeThumb: // 返回的是 thumb_media_id 而不是 media_id
 		var result struct {
 			mp.Error
 			MediaType string `json:"type"`
@@ -195,7 +195,7 @@ RETRY:
 	}
 }
 
-func (clt *Client) mediaUploadFromBytesBuffer(mediaType, filename string, buffer *bytes.Buffer) (info *MediaInfo, err error) {
+func (clt *Client) uploadMediaFromBytesBuffer(mediaType, filename string, buffer *bytes.Buffer) (info *MediaInfo, err error) {
 	fileBytes := buffer.Bytes()
 	ContentLength := int64(multipartConstPartLen + len(filename) + len(fileBytes))
 
@@ -206,7 +206,7 @@ func (clt *Client) mediaUploadFromBytesBuffer(mediaType, filename string, buffer
 
 	hasRetried := false
 RETRY:
-	finalURL := mediaUploadURL(mediaType, token)
+	finalURL := uploadMediaURL(mediaType, token)
 
 	mr := io.MultiReader(
 		strings.NewReader(multipartFormDataFront),
@@ -235,7 +235,7 @@ RETRY:
 	}
 
 	switch mediaType {
-	case MEDIA_TYPE_THUMB: // 返回的是 thumb_media_id 而不是 media_id
+	case MediaTypeThumb: // 返回的是 thumb_media_id 而不是 media_id
 		var result struct {
 			mp.Error
 			MediaType string `json:"type"`
@@ -303,7 +303,7 @@ RETRY:
 	}
 }
 
-func (clt *Client) mediaUploadFromBytesReader(mediaType, filename string, reader *bytes.Reader) (info *MediaInfo, err error) {
+func (clt *Client) uploadMediaFromBytesReader(mediaType, filename string, reader *bytes.Reader) (info *MediaInfo, err error) {
 	originalOffset, err := reader.Seek(0, 1)
 	if err != nil {
 		return
@@ -317,7 +317,7 @@ func (clt *Client) mediaUploadFromBytesReader(mediaType, filename string, reader
 
 	hasRetried := false
 RETRY:
-	finalURL := mediaUploadURL(mediaType, token)
+	finalURL := uploadMediaURL(mediaType, token)
 
 	if hasRetried {
 		if _, err = reader.Seek(originalOffset, 0); err != nil {
@@ -351,7 +351,7 @@ RETRY:
 	}
 
 	switch mediaType {
-	case MEDIA_TYPE_THUMB: // 返回的是 thumb_media_id 而不是 media_id
+	case MediaTypeThumb: // 返回的是 thumb_media_id 而不是 media_id
 		var result struct {
 			mp.Error
 			MediaType string `json:"type"`
@@ -419,7 +419,7 @@ RETRY:
 	}
 }
 
-func (clt *Client) mediaUploadFromStringsReader(mediaType, filename string, reader *strings.Reader) (info *MediaInfo, err error) {
+func (clt *Client) uploadMediaFromStringsReader(mediaType, filename string, reader *strings.Reader) (info *MediaInfo, err error) {
 	originalOffset, err := reader.Seek(0, 1)
 	if err != nil {
 		return
@@ -433,7 +433,7 @@ func (clt *Client) mediaUploadFromStringsReader(mediaType, filename string, read
 
 	hasRetried := false
 RETRY:
-	finalURL := mediaUploadURL(mediaType, token)
+	finalURL := uploadMediaURL(mediaType, token)
 
 	if hasRetried {
 		if _, err = reader.Seek(originalOffset, 0); err != nil {
@@ -467,7 +467,7 @@ RETRY:
 	}
 
 	switch mediaType {
-	case MEDIA_TYPE_THUMB: // 返回的是 thumb_media_id 而不是 media_id
+	case MediaTypeThumb: // 返回的是 thumb_media_id 而不是 media_id
 		var result struct {
 			mp.Error
 			MediaType string `json:"type"`
@@ -535,10 +535,10 @@ RETRY:
 	}
 }
 
-func (clt *Client) mediaUploadFromIOReader(mediaType, filename string, reader io.Reader) (info *MediaInfo, err error) {
-	bodyBuf := mp.MediaBufferPool.Get().(*bytes.Buffer) // io.ReadWriter
-	bodyBuf.Reset()                                     // important
-	defer mp.MediaBufferPool.Put(bodyBuf)               // important
+func (clt *Client) uploadMediaFromIOReader(mediaType, filename string, reader io.Reader) (info *MediaInfo, err error) {
+	bodyBuf := mediaBufferPool.Get().(*bytes.Buffer) // io.ReadWriter
+	bodyBuf.Reset()                                  // important
+	defer mediaBufferPool.Put(bodyBuf)               // important
 
 	bodyBuf.WriteString(multipartFormDataFront)
 	bodyBuf.WriteString(filename)
@@ -557,7 +557,7 @@ func (clt *Client) mediaUploadFromIOReader(mediaType, filename string, reader io
 
 	hasRetried := false
 RETRY:
-	finalURL := mediaUploadURL(mediaType, token)
+	finalURL := uploadMediaURL(mediaType, token)
 
 	httpResp, err := clt.HttpClient.Post(finalURL, multipartContentType, bytes.NewReader(bodyBytes))
 	if err != nil {
@@ -571,7 +571,7 @@ RETRY:
 	}
 
 	switch mediaType {
-	case MEDIA_TYPE_THUMB: // 返回的是 thumb_media_id 而不是 media_id
+	case MediaTypeThumb: // 返回的是 thumb_media_id 而不是 media_id
 		var result struct {
 			mp.Error
 			MediaType string `json:"type"`

@@ -3,15 +3,5 @@
 // @license     https://github.com/chanxuehong/wechatv2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-package mp
-
-import (
-	"bytes"
-	"sync"
-)
-
-var textBufferPool = sync.Pool{
-	New: func() interface{} {
-		return bytes.NewBuffer(make([]byte, 0, 16<<10)) // 默认 16KB
-	},
-}
+// 定义普通消息(事件)的数据结构和处理函数, 包括接收和回复.
+package message

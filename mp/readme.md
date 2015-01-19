@@ -1,7 +1,7 @@
 # 微信公众平台 订阅号, 服务号 golang SDK
 
+### 一个 URL 监听一个公众号的消息
 ```Go
-// 一个 URL 监听一个公众号的消息
 package main
 
 import (
@@ -25,7 +25,7 @@ func main() {
 	}
 
 	messageServeMux := mp.NewMessageServeMux()
-	messageServeMux.EventHandleFunc(menu.EVENT_TYPE_CLICK, MenuClickEventHandler)
+	messageServeMux.EventHandleFunc(menu.EventTypeClick, MenuClickEventHandler)
 
 	wechatServer := mp.NewDefaultWechatServer("id", "token", "appid", messageServeMux, aesKey)
 
@@ -36,9 +36,8 @@ func main() {
 }
 ```
 
-
+### 一个 URL 监听多个公众号的消息
 ```Go
-// 一个 URL 监听多个公众号的消息
 package main
 
 import (
@@ -62,7 +61,7 @@ func main() {
 	}
 
 	messageServeMux1 := mp.NewMessageServeMux()
-	messageServeMux1.EventHandleFunc(menu.EVENT_TYPE_CLICK, MenuClickEventHandler)
+	messageServeMux1.EventHandleFunc(menu.EventTypeClick, MenuClickEventHandler)
 
 	wechatServer1 := mp.NewDefaultWechatServer("id1", "token1", "appid1", messageServeMux1, aesKey1)
 
@@ -72,7 +71,7 @@ func main() {
 	}
 
 	messageServeMux2 := mp.NewMessageServeMux()
-	messageServeMux2.EventHandleFunc(menu.EVENT_TYPE_CLICK, MenuClickEventHandler)
+	messageServeMux2.EventHandleFunc(menu.EventTypeClick, MenuClickEventHandler)
 
 	wechatServer2 := mp.NewDefaultWechatServer("id2", "token2", "appid2", messageServeMux2, aesKey2)
 

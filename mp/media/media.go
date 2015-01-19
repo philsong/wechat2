@@ -10,11 +10,11 @@ const (
 )
 
 const (
-	MEDIA_TYPE_IMAGE = "image"
-	MEDIA_TYPE_VOICE = "voice"
-	MEDIA_TYPE_VIDEO = "video"
-	MEDIA_TYPE_THUMB = "thumb"
-	MEDIA_TYPE_NEWS  = "news"
+	MediaTypeImage = "image"
+	MediaTypeVoice = "voice"
+	MediaTypeVideo = "video"
+	MediaTypeThumb = "thumb"
+	MediaTypeNews  = "news"
 )
 
 type MediaInfo struct {

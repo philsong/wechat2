@@ -21,17 +21,17 @@ const (
 )
 
 const (
-	BUTTON_TYPE_CLICK = "click" // 点击推事件
-	BUTTON_TYPE_VIEW  = "view"  // 跳转URL
+	ButtonTypeClick = "click" // 点击推事件
+	ButtonTypeView  = "view"  // 跳转URL
 
 	// 请注意, 下面的事件, 仅支持微信iPhone5.4.1以上版本, 和Android5.4以上版本的微信用户,
 	// 旧版本微信用户点击后将没有回应, 开发者也不能正常接收到事件推送.
-	BUTTON_TYPE_SCANCODE_PUSH      = "scancode_push"      // 扫码推事件
-	BUTTON_TYPE_SCANCODE_WAITMSG   = "scancode_waitmsg"   // 扫码带提示
-	BUTTON_TYPE_PIC_SYSPHOTO       = "pic_sysphoto"       // 系统拍照发图
-	BUTTON_TYPE_PIC_PHOTO_OR_ALBUM = "pic_photo_or_album" // 拍照或者相册发图
-	BUTTON_TYPE_PIC_WEIXIN         = "pic_weixin"         // 微信相册发图
-	BUTTON_TYPE_LOCATION_SELECT    = "location_select"    // 发送位置
+	ButtonTypeScanCodePush    = "scancode_push"      // 扫码推事件
+	ButtonTypeScanCodeWaitMsg = "scancode_waitmsg"   // 扫码带提示
+	ButtonTypePicSysPhoto     = "pic_sysphoto"       // 系统拍照发图
+	ButtonTypePicPhotoOrAlbum = "pic_photo_or_album" // 拍照或者相册发图
+	ButtonTypePicWeixin       = "pic_weixin"         // 微信相册发图
+	ButtonTypeLocationSelect  = "location_select"    // 发送位置
 )
 
 type Menu struct {
@@ -60,7 +60,7 @@ func (btn *Button) SetAsSubMenuButton(name string, subButtons []Button) {
 // 设置 btn 指向的 Button 为 click 类型按钮
 func (btn *Button) SetAsClickButton(name, key string) {
 	btn.Name = name
-	btn.Type = BUTTON_TYPE_CLICK
+	btn.Type = ButtonTypeClick
 	btn.Key = key
 
 	btn.URL = ""
@@ -70,7 +70,7 @@ func (btn *Button) SetAsClickButton(name, key string) {
 // 设置 btn 指向的 Button 为 view 类型按钮
 func (btn *Button) SetAsViewButton(name, url string) {
 	btn.Name = name
-	btn.Type = BUTTON_TYPE_VIEW
+	btn.Type = ButtonTypeView
 	btn.URL = url
 
 	btn.Key = ""
@@ -80,7 +80,7 @@ func (btn *Button) SetAsViewButton(name, url string) {
 // 设置 btn 指向的 Button 为 扫码推事件 类型按钮
 func (btn *Button) SetAsScanCodePushButton(name, key string) {
 	btn.Name = name
-	btn.Type = BUTTON_TYPE_SCANCODE_PUSH
+	btn.Type = ButtonTypeScanCodePush
 	btn.Key = key
 
 	btn.URL = ""
@@ -90,7 +90,7 @@ func (btn *Button) SetAsScanCodePushButton(name, key string) {
 // 设置 btn 指向的 Button 为 扫码推事件且弹出“消息接收中”提示框 类型按钮
 func (btn *Button) SetAsScanCodeWaitMsgButton(name, key string) {
 	btn.Name = name
-	btn.Type = BUTTON_TYPE_SCANCODE_WAITMSG
+	btn.Type = ButtonTypeScanCodeWaitMsg
 	btn.Key = key
 
 	btn.URL = ""
@@ -100,7 +100,7 @@ func (btn *Button) SetAsScanCodeWaitMsgButton(name, key string) {
 // 设置 btn 指向的 Button 为 弹出系统拍照发图 类型按钮
 func (btn *Button) SetAsPicSysPhotoButton(name, key string) {
 	btn.Name = name
-	btn.Type = BUTTON_TYPE_PIC_SYSPHOTO
+	btn.Type = ButtonTypePicSysPhoto
 	btn.Key = key
 
 	btn.URL = ""
@@ -110,7 +110,7 @@ func (btn *Button) SetAsPicSysPhotoButton(name, key string) {
 // 设置 btn 指向的 Button 为 弹出拍照或者相册发图 类型按钮
 func (btn *Button) SetAsPicPhotoOrAlbumButton(name, key string) {
 	btn.Name = name
-	btn.Type = BUTTON_TYPE_PIC_PHOTO_OR_ALBUM
+	btn.Type = ButtonTypePicPhotoOrAlbum
 	btn.Key = key
 
 	btn.URL = ""
@@ -120,7 +120,7 @@ func (btn *Button) SetAsPicPhotoOrAlbumButton(name, key string) {
 // 设置 btn 指向的 Button 为 弹出微信相册发图器 类型按钮
 func (btn *Button) SetAsPicWeixinButton(name, key string) {
 	btn.Name = name
-	btn.Type = BUTTON_TYPE_PIC_WEIXIN
+	btn.Type = ButtonTypePicWeixin
 	btn.Key = key
 
 	btn.URL = ""
@@ -130,7 +130,7 @@ func (btn *Button) SetAsPicWeixinButton(name, key string) {
 // 设置 btn 指向的 Button 为 弹出地理位置选择器 类型按钮
 func (btn *Button) SetAsLocationSelectButton(name, key string) {
 	btn.Name = name
-	btn.Type = BUTTON_TYPE_LOCATION_SELECT
+	btn.Type = ButtonTypeLocationSelect
 	btn.Key = key
 
 	btn.URL = ""

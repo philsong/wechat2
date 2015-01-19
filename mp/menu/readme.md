@@ -24,7 +24,7 @@ func main() {
 	mn.Buttons[2].SetAsSubMenuButton("菜单", subButtons)
 
 	clt := menu.NewClient(TokenService, nil)
-	if err := clt.MenuCreate(mn); err != nil {
+	if err := clt.CreateMenu(mn); err != nil {
 		fmt.Println(err)
 		return
 	}

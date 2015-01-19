@@ -34,7 +34,7 @@ func NewClient(TokenService mp.TokenService, HttpClient *http.Client) *Client {
 }
 
 // 创建自定义菜单.
-func (clt *Client) MenuCreate(menu Menu) (err error) {
+func (clt *Client) CreateMenu(menu Menu) (err error) {
 	var result mp.Error
 
 	incompleteURL := "https://api.weixin.qq.com/cgi-bin/menu/create?access_token="
@@ -50,7 +50,7 @@ func (clt *Client) MenuCreate(menu Menu) (err error) {
 }
 
 // 删除自定义菜单
-func (clt *Client) MenuDelete() (err error) {
+func (clt *Client) DeleteMenu() (err error) {
 	var result mp.Error
 
 	incompleteURL := "https://api.weixin.qq.com/cgi-bin/menu/delete?access_token="
@@ -66,7 +66,7 @@ func (clt *Client) MenuDelete() (err error) {
 }
 
 // 获取自定义菜单
-func (clt *Client) MenuGet() (menu Menu, err error) {
+func (clt *Client) GetMenu() (menu Menu, err error) {
 	var result struct {
 		mp.Error
 		Menu Menu `json:"menu"`

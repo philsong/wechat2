@@ -102,9 +102,9 @@ func (clt *WechatClient) GetNewToken() (token string, err error) {
 //  3. response 要求是 struct 的指针, 并且有该 struct 拥有这个属性:
 //     ErrCode int `json:"errcode"`
 func (clt *WechatClient) PostJSON(incompleteURL string, request interface{}, response interface{}) (err error) {
-	buf := TextBufferPool.Get().(*bytes.Buffer) // io.ReadWriter
+	buf := textBufferPool.Get().(*bytes.Buffer) // io.ReadWriter
 	buf.Reset()                                 // important
-	defer TextBufferPool.Put(buf)               // important
+	defer textBufferPool.Put(buf)               // important
 
 	if err = wechatjson.NewEncoder(buf).Encode(request); err != nil {
 		return
