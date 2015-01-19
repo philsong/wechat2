@@ -30,9 +30,10 @@ type DefaultWechatServer struct {
 
 	messageHandler MessageHandler
 
-	rwmutex       sync.RWMutex
-	currentAESKey [32]byte // 当前的 AES Key
-	lastAESKey    [32]byte // 最后一个 AES Key
+	rwmutex           sync.RWMutex
+	currentAESKey     [32]byte // 当前的 AES Key
+	lastAESKey        [32]byte // 最后一个 AES Key
+	isLastAESKeyValid bool     // lastAESKey 是否有效, 如果是 lastAESKey 是 zero 则无效
 }
 
 // 初始化 DefaultAgent
@@ -78,7 +79,11 @@ func (srv *DefaultWechatServer) CurrentAESKey() (key [32]byte) {
 }
 func (srv *DefaultWechatServer) LastAESKey() (key [32]byte) {
 	srv.rwmutex.RLock()
-	key = srv.lastAESKey
+	if srv.isLastAESKeyValid {
+		key = srv.lastAESKey
+	} else {
+		key = srv.currentAESKey
+	}
 	srv.rwmutex.RUnlock()
 	return
 }
@@ -89,6 +94,7 @@ func (srv *DefaultWechatServer) UpdateAESKey(AESKey []byte) (err error) {
 
 	srv.rwmutex.Lock()
 	srv.lastAESKey = srv.currentAESKey
+	srv.isLastAESKeyValid = true
 	copy(srv.currentAESKey[:], AESKey)
 	srv.rwmutex.Unlock()
 	return

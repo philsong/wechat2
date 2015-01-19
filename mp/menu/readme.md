@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/chanxuehong/wechatv2/mp"
 	"github.com/chanxuehong/wechatv2/mp/menu"
 )
@@ -23,7 +24,7 @@ func main() {
 	mn.Buttons[2].SetAsSubMenuButton("菜单", subButtons)
 
 	clt := menu.NewClient(TokenService, nil)
-	if err := clt.CreateMenu(mn); err != nil {
+	if err := clt.MenuCreate(mn); err != nil {
 		fmt.Println(err)
 		return
 	}
