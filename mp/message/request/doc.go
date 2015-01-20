@@ -3,5 +3,5 @@
 // @license     https://github.com/chanxuehong/wechatv2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-// 客服主动回复消息.
-package custom
+// 被动接收基本的消息(事件).
+package request

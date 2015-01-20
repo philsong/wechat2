@@ -27,7 +27,7 @@ type CommonMessageHeader struct {
 // 如果需要以某个客服帐号来发消息（在微信6.0.2及以上版本中显示自定义头像），
 // 则需在JSON数据包的后半部分加入 customservice 参数
 type CustomService struct {
-	KFAccount string `json:"kfaccount"`
+	KfAccount string `json:"kfaccount"`
 }
 
 // 文本消息
@@ -55,7 +55,7 @@ func NewText(toUser, content, kfAccount string) (text *Text) {
 
 	if kfAccount != "" {
 		text.CustomService = &CustomService{
-			KFAccount: kfAccount,
+			KfAccount: kfAccount,
 		}
 	}
 	return
@@ -86,7 +86,7 @@ func NewImage(toUser, mediaId, kfAccount string) (image *Image) {
 
 	if kfAccount != "" {
 		image.CustomService = &CustomService{
-			KFAccount: kfAccount,
+			KfAccount: kfAccount,
 		}
 	}
 	return
@@ -117,7 +117,7 @@ func NewVoice(toUser, mediaId, kfAccount string) (voice *Voice) {
 
 	if kfAccount != "" {
 		voice.CustomService = &CustomService{
-			KFAccount: kfAccount,
+			KfAccount: kfAccount,
 		}
 	}
 	return
@@ -157,7 +157,7 @@ func NewVideo(toUser, mediaId, thumbMediaId, title, description,
 
 	if kfAccount != "" {
 		video.CustomService = &CustomService{
-			KFAccount: kfAccount,
+			KfAccount: kfAccount,
 		}
 	}
 	return
@@ -199,7 +199,7 @@ func NewMusic(toUser, thumbMediaId, musicURL, HQMusicURL, title, description,
 
 	if kfAccount != "" {
 		music.CustomService = &CustomService{
-			KFAccount: kfAccount,
+			KfAccount: kfAccount,
 		}
 	}
 	return
@@ -242,7 +242,7 @@ func NewNews(toUser string, articles []NewsArticle, kfAccount string) (news *New
 
 	if kfAccount != "" {
 		news.CustomService = &CustomService{
-			KFAccount: kfAccount,
+			KfAccount: kfAccount,
 		}
 	}
 	return

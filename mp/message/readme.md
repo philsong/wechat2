@@ -1,22 +1,22 @@
-# 普通消息和事件的接收和回复
-
-### 简单示例
+### 被动接收消息和回复示例
 ```Go
 package main
 
 import (
 	"fmt"
-	"github.com/chanxuehong/wechatv2/mp"
-	"github.com/chanxuehong/wechatv2/mp/message"
-	"github.com/chanxuehong/wechatv2/util"
 	"log"
 	"net/http"
+
+	"github.com/chanxuehong/wechatv2/mp"
+	"github.com/chanxuehong/wechatv2/mp/message/request"
+	"github.com/chanxuehong/wechatv2/mp/message/response"
+	"github.com/chanxuehong/wechatv2/util"
 )
 
 // 处理普通文本消息, 原样返回
 func TextMessageHandler(w http.ResponseWriter, r *mp.Request) {
-	textReq := message.GetTextRequest(r.Msg)
-	textResp := message.NewTextResponse(textReq.FromUserName, textReq.ToUserName,
+	textReq := request.GetText(r.Msg)
+	textResp := response.NewText(textReq.FromUserName, textReq.ToUserName,
 		textReq.Content, textReq.CreateTime)
 
 	if err := mp.WriteAESResponse(w, r, textResp); err != nil {
@@ -26,7 +26,7 @@ func TextMessageHandler(w http.ResponseWriter, r *mp.Request) {
 
 // 上报地理位置事件处理
 func LocationEventHandler(w http.ResponseWriter, r *mp.Request) {
-	event := message.GetLocationEvent(r.Msg)
+	event := request.GetLocationEvent(r.Msg)
 	fmt.Println(event) // 处理事件
 }
 
@@ -37,8 +37,8 @@ func main() {
 	}
 
 	messageServeMux := mp.NewMessageServeMux()
-	messageServeMux.MessageHandleFunc(message.MsgRequestTypeText, TextMessageHandler)
-	messageServeMux.EventHandleFunc(message.EventTypeLocation, LocationEventHandler)
+	messageServeMux.MessageHandleFunc(request.MsgTypeText, TextMessageHandler)
+	messageServeMux.EventHandleFunc(request.EventTypeLocation, LocationEventHandler)
 
 	wechatServer := mp.NewDefaultWechatServer("id", "token", "appid", messageServeMux, aesKey)
 

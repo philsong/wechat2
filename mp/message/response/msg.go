@@ -3,7 +3,8 @@
 // @license     https://github.com/chanxuehong/wechatv2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-package message
+// 被动回复用户消息.
+package response
 
 import (
 	"errors"
@@ -13,17 +14,17 @@ import (
 )
 
 const (
-	MsgResponseTypeText                    = "text"                      // 文本消息
-	MsgResponseTypeImage                   = "image"                     // 图片消息
-	MsgResponseTypeVoice                   = "voice"                     // 语音消息
-	MsgResponseTypeVideo                   = "video"                     // 视频消息
-	MsgResponseTypeMusic                   = "music"                     // 音乐消息
-	MsgResponseTypeNews                    = "news"                      // 图文消息
-	MsgResponseTypeTransferCustomerService = "transfer_customer_service" // 将消息转发到多客服
+	MsgTypeText                    = "text"                      // 文本消息
+	MsgTypeImage                   = "image"                     // 图片消息
+	MsgTypeVoice                   = "voice"                     // 语音消息
+	MsgTypeVideo                   = "video"                     // 视频消息
+	MsgTypeMusic                   = "music"                     // 音乐消息
+	MsgTypeNews                    = "news"                      // 图文消息
+	MsgTypeTransferCustomerService = "transfer_customer_service" // 将消息转发到多客服
 )
 
 // 文本消息
-type TextResponse struct {
+type Text struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -32,20 +33,20 @@ type TextResponse struct {
 
 // 新建文本消息
 //  NOTE: content 支持换行符
-func NewTextResponse(to, from, content string, timestamp int64) (text *TextResponse) {
-	return &TextResponse{
+func NewText(to, from, content string, timestamp int64) (text *Text) {
+	return &Text{
 		CommonMessageHeader: mp.CommonMessageHeader{
 			ToUserName:   to,
 			FromUserName: from,
 			CreateTime:   timestamp,
-			MsgType:      MsgResponseTypeText,
+			MsgType:      MsgTypeText,
 		},
 		Content: content,
 	}
 }
 
 // 图片消息
-type ImageResponse struct {
+type Image struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -56,13 +57,13 @@ type ImageResponse struct {
 
 // 新建图片消息
 //  MediaId 通过上传多媒体文件得到
-func NewImageResponse(to, from, mediaId string, timestamp int64) (image *ImageResponse) {
-	image = &ImageResponse{
+func NewImage(to, from, mediaId string, timestamp int64) (image *Image) {
+	image = &Image{
 		CommonMessageHeader: mp.CommonMessageHeader{
 			ToUserName:   to,
 			FromUserName: from,
 			CreateTime:   timestamp,
-			MsgType:      MsgResponseTypeImage,
+			MsgType:      MsgTypeImage,
 		},
 	}
 	image.Image.MediaId = mediaId
@@ -70,7 +71,7 @@ func NewImageResponse(to, from, mediaId string, timestamp int64) (image *ImageRe
 }
 
 // 语音消息
-type VoiceResponse struct {
+type Voice struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -81,13 +82,13 @@ type VoiceResponse struct {
 
 // 新建语音消息
 //  MediaId 通过上传多媒体文件得到
-func NewVoiceResponse(to, from, mediaId string, timestamp int64) (voice *VoiceResponse) {
-	voice = &VoiceResponse{
+func NewVoice(to, from, mediaId string, timestamp int64) (voice *Voice) {
+	voice = &Voice{
 		CommonMessageHeader: mp.CommonMessageHeader{
 			ToUserName:   to,
 			FromUserName: from,
 			CreateTime:   timestamp,
-			MsgType:      MsgResponseTypeVoice,
+			MsgType:      MsgTypeVoice,
 		},
 	}
 	voice.Voice.MediaId = mediaId
@@ -95,7 +96,7 @@ func NewVoiceResponse(to, from, mediaId string, timestamp int64) (voice *VoiceRe
 }
 
 // 视频消息
-type VideoResponse struct {
+type Video struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -109,13 +110,13 @@ type VideoResponse struct {
 // 新建视频消息
 //  MediaId 通过上传多媒体文件得到
 //  title, description 可以为 ""
-func NewVideoResponse(to, from, mediaId, title, description string, timestamp int64) (video *VideoResponse) {
-	video = &VideoResponse{
+func NewVideo(to, from, mediaId, title, description string, timestamp int64) (video *Video) {
+	video = &Video{
 		CommonMessageHeader: mp.CommonMessageHeader{
 			ToUserName:   to,
 			FromUserName: from,
 			CreateTime:   timestamp,
-			MsgType:      MsgResponseTypeVideo,
+			MsgType:      MsgTypeVideo,
 		},
 	}
 	video.Video.MediaId = mediaId
@@ -125,7 +126,7 @@ func NewVideoResponse(to, from, mediaId, title, description string, timestamp in
 }
 
 // 音乐消息
-type MusicResponse struct {
+type Music struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -141,15 +142,15 @@ type MusicResponse struct {
 // 新建音乐消息
 //  thumbMediaId 通过上传多媒体文件得到
 //  title, description 可以为 ""
-func NewMusicResponse(to, from, thumbMediaId, musicURL,
-	HQMusicURL, title, description string, timestamp int64) (music *MusicResponse) {
+func NewMusic(to, from, thumbMediaId, musicURL,
+	HQMusicURL, title, description string, timestamp int64) (music *Music) {
 
-	music = &MusicResponse{
+	music = &Music{
 		CommonMessageHeader: mp.CommonMessageHeader{
 			ToUserName:   to,
 			FromUserName: from,
 			CreateTime:   timestamp,
-			MsgType:      MsgResponseTypeMusic,
+			MsgType:      MsgTypeMusic,
 		},
 	}
 	music.Music.Title = title
@@ -174,7 +175,7 @@ const (
 
 // 图文消息.
 //  NOTE: Articles 赋值的同时也要更改 ArticleCount 字段, 建议用 NewNews() 和 News.AppendArticle()
-type NewsResponse struct {
+type News struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -183,13 +184,13 @@ type NewsResponse struct {
 }
 
 // NOTE: articles 的长度不能超过 NewsArticleCountLimit
-func NewNewsResponse(to, from string, articles []NewsArticle, timestamp int64) (news *NewsResponse) {
-	news = &NewsResponse{
+func NewNews(to, from string, articles []NewsArticle, timestamp int64) (news *News) {
+	news = &News{
 		CommonMessageHeader: mp.CommonMessageHeader{
 			ToUserName:   to,
 			FromUserName: from,
 			CreateTime:   timestamp,
-			MsgType:      MsgResponseTypeNews,
+			MsgType:      MsgTypeNews,
 		},
 	}
 	news.Articles = articles
@@ -197,21 +198,15 @@ func NewNewsResponse(to, from string, articles []NewsArticle, timestamp int64) (
 	return
 }
 
-// 更新 news.ArticleCount 字段, 使其等于 len(news.Articles)
-func (news *NewsResponse) UpdateArticleCount() {
-	news.ArticleCount = len(news.Articles)
-}
-
 // 增加文章到图文消息中, 该方法会自动更新 News.ArticleCount 字段
-func (news *NewsResponse) AppendArticle(article ...NewsArticle) {
+func (news *News) AppendArticle(article ...NewsArticle) {
 	news.Articles = append(news.Articles, article...)
 	news.ArticleCount = len(news.Articles)
 }
 
 // 检查 News 是否有效，有效返回 nil，否则返回错误信息
-func (news *NewsResponse) CheckValid() (err error) {
+func (news *News) CheckValid() (err error) {
 	n := len(news.Articles)
-
 	if n != news.ArticleCount {
 		err = fmt.Errorf("图文消息的 ArticleCount == %d, 实际文章个数为 %d", news.ArticleCount, n)
 		return
@@ -227,42 +222,33 @@ func (news *NewsResponse) CheckValid() (err error) {
 	return
 }
 
+type TransInfo struct {
+	KfAccount string `xml:"KfAccount" json:"KfAccount"`
+}
+
 // 将消息转发到多客服
-type TransferToCustomerServiceResponse struct {
+type TransferToCustomerService struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
+
+	*TransInfo `xml:"TransInfo,omitempty" json:"TransInfo,omitempty"`
 }
 
-func NewTransferToCustomerServiceResponse(to, from string, timestamp int64) *TransferToCustomerServiceResponse {
-	return &TransferToCustomerServiceResponse{
+// 如果不指定客服则 kfAccount 留空.
+func NewTransferToCustomerService(to, from string, timestamp int64, kfAccount string) (msg *TransferToCustomerService) {
+	msg = &TransferToCustomerService{
 		CommonMessageHeader: mp.CommonMessageHeader{
 			ToUserName:   to,
 			FromUserName: from,
 			CreateTime:   timestamp,
-			MsgType:      MsgResponseTypeTransferCustomerService,
+			MsgType:      MsgTypeTransferCustomerService,
 		},
 	}
-}
 
-// 将消息转发到指定客服
-type TransferToSpecialCustomerServiceResponse struct {
-	XMLName struct{} `xml:"xml" json:"-"`
-	mp.CommonMessageHeader
-
-	TransInfo struct {
-		KfAccount string `xml:"KfAccount"         json:"KfAccount"`
-	} `xml:"TransInfo"         json:"TransInfo"`
-}
-
-func NewTransferToSpecialCustomerServiceResponse(to, from, KfAccount string, timestamp int64) (msg *TransferToSpecialCustomerServiceResponse) {
-	msg = &TransferToSpecialCustomerServiceResponse{
-		CommonMessageHeader: mp.CommonMessageHeader{
-			ToUserName:   to,
-			FromUserName: from,
-			CreateTime:   timestamp,
-			MsgType:      MsgResponseTypeTransferCustomerService,
-		},
+	if kfAccount != "" {
+		msg.TransInfo = &TransInfo{
+			KfAccount: kfAccount,
+		}
 	}
-	msg.TransInfo.KfAccount = KfAccount
 	return
 }

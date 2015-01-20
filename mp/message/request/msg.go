@@ -3,7 +3,7 @@
 // @license     https://github.com/chanxuehong/wechatv2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-package message
+package request
 
 import (
 	"github.com/chanxuehong/wechatv2/mp"
@@ -11,17 +11,17 @@ import (
 
 const (
 	// 微信服务器推送过来的消息类型
-	MsgRequestTypeText     mp.MessageType = "text"     // 文本消息
-	MsgRequestTypeImage                   = "image"    // 图片消息
-	MsgRequestTypeVoice                   = "voice"    // 语音消息
-	MsgRequestTypeVideo                   = "video"    // 视频消息
-	MsgRequestTypeLocation                = "location" // 地理位置消息
-	MsgRequestTypeLink                    = "link"     // 链接消息
-	MsgRequestTypeEvent                   = "event"    // 事件推送
+	MsgTypeText     mp.MessageType = "text"     // 文本消息
+	MsgTypeImage                   = "image"    // 图片消息
+	MsgTypeVoice                   = "voice"    // 语音消息
+	MsgTypeVideo                   = "video"    // 视频消息
+	MsgTypeLocation                = "location" // 地理位置消息
+	MsgTypeLink                    = "link"     // 链接消息
+	MsgTypeEvent                   = "event"    // 事件推送
 )
 
 // 文本消息
-type TextRequest struct {
+type Text struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -29,8 +29,8 @@ type TextRequest struct {
 	Content string `xml:"Content" json:"Content"` // 文本消息内容
 }
 
-func GetTextRequest(msg *mp.MixedMessage) *TextRequest {
-	return &TextRequest{
+func GetText(msg *mp.MixedMessage) *Text {
+	return &Text{
 		CommonMessageHeader: msg.CommonMessageHeader,
 		MsgId:               msg.MsgId,
 		Content:             msg.Content,
@@ -38,7 +38,7 @@ func GetTextRequest(msg *mp.MixedMessage) *TextRequest {
 }
 
 // 图片消息
-type ImageRequest struct {
+type Image struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -47,8 +47,8 @@ type ImageRequest struct {
 	PicURL  string `xml:"PicUrl"  json:"PicUrl"`  // 图片链接
 }
 
-func GetImageRequest(msg *mp.MixedMessage) *ImageRequest {
-	return &ImageRequest{
+func GetImage(msg *mp.MixedMessage) *Image {
+	return &Image{
 		CommonMessageHeader: msg.CommonMessageHeader,
 		MsgId:               msg.MsgId,
 		MediaId:             msg.MediaId,
@@ -57,7 +57,7 @@ func GetImageRequest(msg *mp.MixedMessage) *ImageRequest {
 }
 
 // 语音消息
-type VoiceRequest struct {
+type Voice struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -70,8 +70,8 @@ type VoiceRequest struct {
 	Recognition string `xml:"Recognition,omitempty" json:"Recognition,omitempty"`
 }
 
-func GetVoiceRequest(msg *mp.MixedMessage) *VoiceRequest {
-	return &VoiceRequest{
+func GetVoice(msg *mp.MixedMessage) *Voice {
+	return &Voice{
 		CommonMessageHeader: msg.CommonMessageHeader,
 		MsgId:               msg.MsgId,
 		MediaId:             msg.MediaId,
@@ -81,7 +81,7 @@ func GetVoiceRequest(msg *mp.MixedMessage) *VoiceRequest {
 }
 
 // 视频消息
-type VideoRequest struct {
+type Video struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -90,8 +90,8 @@ type VideoRequest struct {
 	ThumbMediaId string `xml:"ThumbMediaId" json:"ThumbMediaId"` // 视频消息缩略图的媒体id，可以调用多媒体文件下载接口拉取数据。
 }
 
-func GetVideoRequest(msg *mp.MixedMessage) *VideoRequest {
-	return &VideoRequest{
+func GetVideo(msg *mp.MixedMessage) *Video {
+	return &Video{
 		CommonMessageHeader: msg.CommonMessageHeader,
 		MsgId:               msg.MsgId,
 		MediaId:             msg.MediaId,
@@ -100,7 +100,7 @@ func GetVideoRequest(msg *mp.MixedMessage) *VideoRequest {
 }
 
 // 地理位置消息
-type LocationRequest struct {
+type Location struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -111,8 +111,8 @@ type LocationRequest struct {
 	Label     string  `xml:"Label"      json:"Label"`      // 地理位置信息
 }
 
-func GetLocationRequest(msg *mp.MixedMessage) *LocationRequest {
-	return &LocationRequest{
+func GetLocation(msg *mp.MixedMessage) *Location {
+	return &Location{
 		CommonMessageHeader: msg.CommonMessageHeader,
 		MsgId:               msg.MsgId,
 		LocationX:           msg.LocationX,
@@ -123,7 +123,7 @@ func GetLocationRequest(msg *mp.MixedMessage) *LocationRequest {
 }
 
 // 链接消息
-type LinkRequest struct {
+type Link struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	mp.CommonMessageHeader
 
@@ -133,8 +133,8 @@ type LinkRequest struct {
 	URL         string `xml:"Url"         json:"Url"`         // 消息链接
 }
 
-func GetLinkRequest(msg *mp.MixedMessage) *LinkRequest {
-	return &LinkRequest{
+func GetLink(msg *mp.MixedMessage) *Link {
+	return &Link{
 		CommonMessageHeader: msg.CommonMessageHeader,
 		MsgId:               msg.MsgId,
 		Title:               msg.Title,

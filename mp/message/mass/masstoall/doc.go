@@ -3,5 +3,5 @@
 // @license     https://github.com/chanxuehong/wechatv2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-// 客服主动回复消息.
-package custom
+// 群发消息给所有用户.
+package masstoall
