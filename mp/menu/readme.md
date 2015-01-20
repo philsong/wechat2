@@ -6,8 +6,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/chanxuehong/wechatv2/mp"
-	"github.com/chanxuehong/wechatv2/mp/menu"
+	"github.com/chanxuehong/wechat2/mp"
+	"github.com/chanxuehong/wechat2/mp/menu"
 )
 
 var TokenService = mp.NewDefaultTokenService("appid", "appsecret", nil)

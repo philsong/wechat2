@@ -1,12 +1,12 @@
-// @description wechat 是腾讯微信公众平台 api 的 golang 语言封装
-// @link        https://github.com/chanxuehong/wechatv2 for the canonical source repository
-// @license     https://github.com/chanxuehong/wechatv2/blob/master/LICENSE
+// @description wechat2 是腾讯微信公众平台 api 的 golang 语言封装
+// @link        https://github.com/chanxuehong/wechat2 for the canonical source repository
+// @license     https://github.com/chanxuehong/wechat2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
 package mass
 
 import (
-	"github.com/chanxuehong/wechatv2/mp"
+	"github.com/chanxuehong/wechat2/mp"
 )
 
 const (

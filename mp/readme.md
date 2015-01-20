@@ -6,9 +6,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/chanxuehong/wechatv2/mp"
-	"github.com/chanxuehong/wechatv2/mp/menu"
-	"github.com/chanxuehong/wechatv2/util"
+	"github.com/chanxuehong/wechat2/mp"
+	"github.com/chanxuehong/wechat2/mp/menu"
+	"github.com/chanxuehong/wechat2/util"
 	"net/http"
 )
 
@@ -42,9 +42,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/chanxuehong/wechatv2/mp"
-	"github.com/chanxuehong/wechatv2/mp/menu"
-	"github.com/chanxuehong/wechatv2/util"
+	"github.com/chanxuehong/wechat2/mp"
+	"github.com/chanxuehong/wechat2/mp/menu"
+	"github.com/chanxuehong/wechat2/util"
 	"net/http"
 )
 

@@ -10,11 +10,11 @@ QQ群：    297489459
 ## 安装
 通过执行下列语句就可以完成安装
 
-	go get -u github.com/chanxuehong/wechatv2/...
+	go get -u github.com/chanxuehong/wechat2/...
 
 ## 文档
 
-#### [在线文档](http://godoc.org/github.com/chanxuehong/wechatv2)
+#### [在线文档](http://godoc.org/github.com/chanxuehong/wechat2)
 
 #### 离线文档
 通过上面步骤下载下来后，可以在shell(windows 下面是 cmd) 里运行
@@ -29,6 +29,6 @@ QQ群：    297489459
 
 ## 授权(LICENSE)
 
-wechat is licensed under the Apache Licence, Version 2.0
+wechat2 is licensed under the Apache Licence, Version 2.0
 (http://www.apache.org/licenses/LICENSE-2.0.html)
 
