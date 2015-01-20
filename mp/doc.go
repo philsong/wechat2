@@ -3,5 +3,5 @@
 // @license     https://github.com/chanxuehong/wechat2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-// 微信公众平台 订阅号, 服务号 SDK
+// 微信公众平台(订阅号, 服务号)SDK
 package mp

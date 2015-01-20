@@ -13,7 +13,7 @@ import (
 )
 
 func MenuClickEventHandler(w http.ResponseWriter, r *mp.Request) {
-	event := menu.GetClickEvent(r.Msg)
+	event := menu.GetClickEvent(r.MixedMsg)
 	fmt.Println(event.EventKey)
 	return
 }
@@ -49,7 +49,7 @@ import (
 )
 
 func MenuClickEventHandler(w http.ResponseWriter, r *mp.Request) {
-	event := menu.GetClickEvent(r.Msg)
+	event := menu.GetClickEvent(r.MixedMsg)
 	fmt.Println(event.EventKey)
 	return
 }

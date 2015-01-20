@@ -36,7 +36,7 @@ func HttpResponseWriter(w io.Writer) http.ResponseWriter {
 	return httpResponseWriter{Writer: w}
 }
 
-// 消息(事件)请求的参数
+// 消息(事件)请求信息
 type Request struct {
 	HttpRequest *http.Request // 可以为 nil, 因为某些 http 框架没有提供此参数
 
@@ -44,8 +44,8 @@ type Request struct {
 	Signature string        // 请求 URL 中的签名: signature
 	TimeStamp int64         // 请求 URL 中的时间戳: timestamp
 	Nonce     string        // 请求 URL 中的随机数: nonce
-	RawMsgXML []byte        // 明文消息的 XML 文本
-	Msg       *MixedMessage // RawMsgXML 解析后的消息
+	RawMsgXML []byte        // "明文"消息的 XML 文本
+	MixedMsg  *MixedMessage // RawMsgXML 解析后的消息
 
 	// 下面的字段是 AES 模式才有的
 	MsgSignature string   // 请求 URL 中的消息体签名: msg_signature
@@ -67,6 +67,7 @@ type CommonMessageHeader struct {
 	MsgType      string `xml:"MsgType"      json:"MsgType"`
 }
 
+// 微信服务器推送过来的消息(事件)的合集.
 type MixedMessage struct {
 	XMLName struct{} `xml:"xml" json:"-"`
 	CommonMessageHeader

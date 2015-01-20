@@ -12,7 +12,9 @@ import (
 	"sync"
 )
 
-// 定义回调 URL 上指定 WechatServer 的查询参数名
+// 回调 URL 上索引 WechatServer 的 key 的名称.
+//  比如下面的回调地址里面就可以根据 wechat1 来索引对应的 WechatServer.
+//  http://www.xxx.com/?wechatkey=wechat1&signature=XXX&timestamp=123456789&nonce=12345678
 const URLQueryWechatKeyName = "wechatkey"
 
 // 多个 WechatServer 的前端, 负责处理 http 请求, net/http.Handler 的实现
@@ -47,7 +49,8 @@ func (front *MultiWechatServerFrontend) SetInvalidRequestHandler(handler Invalid
 	}
 }
 
-// 添加（设置） wechatkey-WechatServer pair, 如果 wechatServer == nil 则不做任何操作
+// 设置 wechatkey-WechatServer pair.
+// 如果 wechatkey == "" 或者 wechatServer == nil 则不做任何操作
 func (front *MultiWechatServerFrontend) SetWechatServer(wechatkey string, wechatServer WechatServer) {
 	if wechatkey == "" {
 		return
@@ -81,6 +84,7 @@ func (front *MultiWechatServerFrontend) DeleteAllWechatServer() {
 	front.wechatServerMap = make(map[string]WechatServer)
 }
 
+// 实现 http.Handler
 func (front *MultiWechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	urlValues, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
@@ -91,7 +95,6 @@ func (front *MultiWechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *http
 		if invalidRequestHandler == nil {
 			invalidRequestHandler = DefaultInvalidRequestHandler
 		}
-
 		invalidRequestHandler.ServeInvalidRequest(w, r, err)
 		return
 	}
@@ -105,7 +108,6 @@ func (front *MultiWechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *http
 		if invalidRequestHandler == nil {
 			invalidRequestHandler = DefaultInvalidRequestHandler
 		}
-
 		err = fmt.Errorf("the url query value with name %s is empty", URLQueryWechatKeyName)
 		invalidRequestHandler.ServeInvalidRequest(w, r, err)
 		return

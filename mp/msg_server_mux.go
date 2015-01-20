@@ -17,6 +17,7 @@ type (
 
 var _ MessageHandler = new(MessageServeMux)
 
+// MessageServeMux 实现了一个简单的消息路由器, 同时也是一个 MessageHandler.
 type MessageServeMux struct {
 	rwmutex               sync.RWMutex
 	messageHandlers       map[MessageType]MessageHandler
@@ -140,16 +141,16 @@ func (mux *MessageServeMux) eventHandler(eventType EventType) (handler MessageHa
 
 // MessageServeMux 实现了 MessageHandler 接口.
 func (mux *MessageServeMux) ServeMessage(w http.ResponseWriter, r *Request) {
-	if MsgType := r.Msg.MsgType; MsgType == "event" {
-		handler := mux.eventHandler(EventType(r.Msg.Event))
+	if MsgType := r.MixedMsg.MsgType; MsgType == "event" {
+		handler := mux.eventHandler(EventType(r.MixedMsg.Event))
 		if handler == nil {
-			return
+			return // 返回空串, 符合微信协议
 		}
 		handler.ServeMessage(w, r)
 	} else {
 		handler := mux.messageHandler(MessageType(MsgType))
 		if handler == nil {
-			return
+			return // 返回空串, 符合微信协议
 		}
 		handler.ServeMessage(w, r)
 	}

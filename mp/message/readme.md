@@ -15,7 +15,7 @@ import (
 
 // 处理普通文本消息, 原样返回
 func TextMessageHandler(w http.ResponseWriter, r *mp.Request) {
-	textReq := request.GetText(r.Msg)
+	textReq := request.GetText(r.MixedMsg)
 	textResp := response.NewText(textReq.FromUserName, textReq.ToUserName,
 		textReq.Content, textReq.CreateTime)
 
@@ -26,7 +26,7 @@ func TextMessageHandler(w http.ResponseWriter, r *mp.Request) {
 
 // 上报地理位置事件处理
 func LocationEventHandler(w http.ResponseWriter, r *mp.Request) {
-	event := request.GetLocationEvent(r.Msg)
+	event := request.GetLocationEvent(r.MixedMsg)
 	fmt.Println(event) // 处理事件
 }
 

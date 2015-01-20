@@ -10,7 +10,7 @@ import (
 	"net/url"
 )
 
-// 实现了 http.Handler, 处理一个公众号的消息
+// 实现了 http.Handler, 处理一个公众号的消息(事件)请求.
 type WechatServerFrontend struct {
 	wechatServer          WechatServer
 	invalidRequestHandler InvalidRequestHandler
@@ -30,6 +30,7 @@ func NewWechatServerFrontend(wechatServer WechatServer, invalidRequestHandler In
 	}
 }
 
+// 实现 http.Handler.
 func (front *WechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	wechatServer := front.wechatServer
 	invalidRequestHandler := front.invalidRequestHandler

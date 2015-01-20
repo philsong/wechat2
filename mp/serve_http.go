@@ -26,7 +26,7 @@ var zeroAESKey [32]byte
 // 安全模式 和 兼容模式, 微信服务器推送过来的 http body
 type RequestHttpBody struct {
 	XMLName      struct{} `xml:"xml" json:"-"`
-	MixedMessage          // 至少 ToUserName 有效
+	MixedMessage          // ToUserName 一致有效
 	EncryptedMsg string   `xml:"Encrypt" json:"Encrypt"`
 }
 
@@ -58,12 +58,15 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 			//	return
 			//}
 
-			//signature2 := util.Sign(wechatServer.Token(), timestampStr, nonce)
+			//WechatToken := wechatServer.Token()
+			//signature2 := util.Sign(WechatToken, timestampStr, nonce)
 			//if subtle.ConstantTimeCompare([]byte(signature1), []byte(signature2)) != 1 {
 			//	err = fmt.Errorf("check signature failed, input: %s, local: %s", signature1, signature2)
 			//	invalidRequestHandler.ServeInvalidRequest(w, r, err)
 			//	return
 			//}
+
+			// 首先验证密文签名
 
 			if len(msgSignature1) != 40 {
 				err = fmt.Errorf("the length of msg_signature mismatch, have: %d, want: 40", len(msgSignature1))
@@ -77,6 +80,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				return
 			}
 
+			// 安全考虑验证下 ToUserName
 			haveToUserName := requestHttpBody.ToUserName
 			wantToUserName := wechatServer.Id()
 			if len(haveToUserName) != len(wantToUserName) {
@@ -98,6 +102,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				return
 			}
 
+			// 验证签名成功, 解密
 			EncryptedMsgBytes, err := base64.StdEncoding.DecodeString(requestHttpBody.EncryptedMsg)
 			if err != nil {
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
@@ -108,6 +113,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 			AESKey := wechatServer.CurrentAESKey()
 			Random, RawMsgXML, err := util.AESDecryptMsg(EncryptedMsgBytes, WechatAppId, AESKey)
 			if err != nil {
+				// 尝试用上一次的 AESKey 来解密
 				LastAESKey := wechatServer.LastAESKey()
 				if bytes.Equal(zeroAESKey[:], LastAESKey[:]) || bytes.Equal(AESKey[:], LastAESKey[:]) {
 					invalidRequestHandler.ServeInvalidRequest(w, r, err)
@@ -122,18 +128,21 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				}
 			}
 
+			// 解密成功, 解析 MixedMessage
 			var MixedMsg MixedMessage
 			if err = xml.Unmarshal(RawMsgXML, &MixedMsg); err != nil {
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
 				return
 			}
 
+			// 安全考虑再次验证 ToUserName
 			if haveToUserName != MixedMsg.ToUserName {
 				err = fmt.Errorf("the RequestHttpBody's ToUserName(==%s) mismatch the MixedMessage's ToUserName(==%s)", haveToUserName, MixedMsg.ToUserName)
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
 				return
 			}
 
+			// 成功, 交给 MessageHandler
 			r := &Request{
 				HttpRequest: r,
 
@@ -141,7 +150,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				TimeStamp: timestamp,
 				Nonce:     nonce,
 				RawMsgXML: RawMsgXML,
-				Msg:       &MixedMsg,
+				MixedMsg:  &MixedMsg,
 
 				MsgSignature: msgSignature1,
 				EncryptType:  encryptType,
@@ -155,6 +164,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 			wechatServer.MessageHandler().ServeMessage(w, r)
 
 		case "", "raw": // 明文模式
+			// 首先验证签名
 			if len(signature1) != 40 {
 				err = fmt.Errorf("the length of signature mismatch, have: %d, want: 40", len(signature1))
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
@@ -169,6 +179,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				return
 			}
 
+			// 验证签名成功, 解析 MixedMessage
 			RawMsgXML, err := ioutil.ReadAll(r.Body)
 			if err != nil {
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
@@ -181,6 +192,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				return
 			}
 
+			// 安全考虑验证 ToUserName
 			haveToUserName := MixedMsg.ToUserName
 			wantToUserName := wechatServer.Id()
 			if len(haveToUserName) != len(wantToUserName) {
@@ -194,6 +206,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				return
 			}
 
+			// 成功, 交给 MessageHandler
 			r := &Request{
 				HttpRequest: r,
 
@@ -201,7 +214,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				TimeStamp: timestamp,
 				Nonce:     nonce,
 				RawMsgXML: RawMsgXML,
-				Msg:       &MixedMsg,
+				MixedMsg:  &MixedMsg,
 
 				WechatId:    wantToUserName,
 				WechatToken: WechatToken,

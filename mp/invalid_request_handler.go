@@ -9,8 +9,9 @@ import (
 	"net/http"
 )
 
+// 无效请求(非法或者错误)的处理接口.
 type InvalidRequestHandler interface {
-	// 非法请求的处理方法, err 是错误信息
+	// err 是错误信息
 	ServeInvalidRequest(w http.ResponseWriter, r *http.Request, err error)
 }
 

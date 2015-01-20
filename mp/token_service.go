@@ -5,13 +5,11 @@
 
 package mp
 
-// access token 伺服接口, 用于集中式获取 access token 场景, see token_service.png.
+// access_token 伺服接口, 用于集中式获取 access_token 场景, see token_service.png.
 type TokenService interface {
-	// 获取 access token, 该 token 一般缓存在某个地方.
-	//  NOTE: 该方法一定要功能上实现!
+	// 获取 access_token, 该 access_token 一般缓存在某个地方.
 	Token() (token string, err error)
 
-	// 从微信服务器获取新的 access token.
-	//  NOTE: 该方法可以选择是否功能上实现, 如果没有需求可以在语法上实现即可!
+	// 从微信服务器获取新的 access_token.
 	TokenRefresh() (token string, err error)
 }

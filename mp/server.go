@@ -10,11 +10,12 @@ import (
 	"sync"
 )
 
+// 公众号服务端接口, 处理单个公众号的消息(事件)请求.
 type WechatServer interface {
 	Id() string    // 获取公众号的原始ID, 等于后台中的 公众号设置-->帐号详情-->原始ID
 	Token() string // 获取公众号的Token, 和后台中的设置相等
 
-	AppId() string
+	AppId() string           // 获取公众号的 AppId
 	CurrentAESKey() [32]byte // 获取当前有效的 AES 加密 Key
 	LastAESKey() [32]byte    // 获取最后一个有效的 AES 加密 Key
 
@@ -36,9 +37,9 @@ type DefaultWechatServer struct {
 	isLastAESKeyValid bool     // lastAESKey 是否有效, 如果是 lastAESKey 是 zero 则无效
 }
 
-// 初始化 DefaultAgent
+// NewDefaultWechatServer 创建一个新的 DefaultWechatServer.
 //  如果不知道自己的 AppId 是多少, 可以先随便填入一个字符串,
-//  这样正常情况下会出现 AppId mismatch 错误, 错误的 have 后面的就是正确的 AppId
+//  这样正常情况下会出现 AppId mismatch 错误, 错误的 have 后面的就是正确的 AppId.
 func NewDefaultWechatServer(id, token, appId string, messageHandler MessageHandler,
 	AESKey []byte) (srv *DefaultWechatServer) {
 
