@@ -20,9 +20,9 @@ const defaultTickDuration = time.Minute // 设置 44 秒以上就不会超过限
 var _ TokenServer = new(DefaultTokenServer)
 
 // TokenServer 的简单实现.
-// NOTE:
-// 一般用于单进程环境, 因为 DefaultTokenServer 同时也实现了一个简单的中控服务器, 而不是简单的
-// 实现了 TokenServer 接口, 所以整个系统只能存在一个 DefaultTokenServer 实例!!!
+//  NOTE:
+//  一般用于单进程环境, 因为 DefaultTokenServer 同时也实现了一个简单的中控服务器, 而不是简单的
+//  实现了 TokenServer 接口, 所以整个系统只能存在一个 DefaultTokenServer 实例!!!
 type DefaultTokenServer struct {
 	appid, appsecret string
 	httpClient       *http.Client
