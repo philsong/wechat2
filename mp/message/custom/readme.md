@@ -9,12 +9,12 @@ import (
 	"github.com/chanxuehong/wechat2/mp/message/custom"
 )
 
-var TokenService = mp.NewDefaultTokenService("appid", "appsecret", nil)
+var TokenServer = mp.NewDefaultTokenServer("appid", "appsecret", nil)
 
 func main() {
 	text := custom.NewText("touser", "content", "")
 
-	clt := custom.NewClient(TokenService, nil)
+	clt := custom.NewClient(TokenServer, nil)
 	if err := clt.SendText(text); err != nil {
 		fmt.Println(err)
 		return

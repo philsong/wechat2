@@ -11,12 +11,12 @@ import (
 	"github.com/chanxuehong/wechat2/mp/message/mass/masstogroup"
 )
 
-var TokenService = mp.NewDefaultTokenService("appid", "appsecret", nil)
+var TokenServer = mp.NewDefaultTokenServer("appid", "appsecret", nil)
 
 func main() {
 	text := masstogroup.NewText(1 /* groupid */, "content")
 
-	clt := masstogroup.NewClient(TokenService, nil)
+	clt := masstogroup.NewClient(TokenServer, nil)
 
 	msgId, err := clt.SendText(text)
 	if err != nil {

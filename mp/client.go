@@ -21,13 +21,13 @@ import (
 type WechatClient struct {
 	accessToken string // 缓存当前的 access_token
 
-	TokenService TokenService
-	HttpClient   *http.Client
+	TokenServer TokenServer
+	HttpClient  *http.Client
 }
 
 // 获取 access_token.
 func (clt *WechatClient) Token() (token string, err error) {
-	token, err = clt.TokenService.Token()
+	token, err = clt.TokenServer.Token()
 	if err != nil {
 		clt.accessToken = ""
 		return
@@ -43,7 +43,7 @@ func (clt *WechatClient) Token() (token string, err error) {
 //     也请谨慎调用 TokenRefresh, 建议直接返回错误! 因为很有可能高并发情况下造成雪崩效应!
 //  3. 再次强调, 调用这个函数你应该知道发生了什么!!!
 func (clt *WechatClient) TokenRefresh() (token string, err error) {
-	token, err = clt.TokenService.TokenRefresh()
+	token, err = clt.TokenServer.TokenRefresh()
 	if err != nil {
 		clt.accessToken = ""
 		return
@@ -81,7 +81,7 @@ func (clt *WechatClient) GetNewToken() (token string, err error) {
 	// 中控服务器获取到 access_token 了.
 	retryNum := getRetryNum()
 	for i := 0; ; {
-		token, err = clt.TokenService.Token()
+		token, err = clt.TokenServer.Token()
 		if err != nil {
 			clt.accessToken = ""
 			return

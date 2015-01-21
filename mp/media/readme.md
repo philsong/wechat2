@@ -10,10 +10,10 @@ import (
 	"github.com/chanxuehong/wechat2/mp/media"
 )
 
-var TokenService = mp.NewDefaultTokenService("appid", "appsecret", nil)
+var TokenServer = mp.NewDefaultTokenServer("appid", "appsecret", nil)
 
 func main() {
-	clt := media.NewClient(TokenService, nil)
+	clt := media.NewClient(TokenServer, nil)
 	info, err := clt.UploadImage("d:\\img.jpg")
 	if err != nil {
 		fmt.Println(err)

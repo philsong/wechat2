@@ -18,9 +18,9 @@ type Client struct {
 
 // 创建一个新的 Client.
 //  如果 HttpClient == nil 则默认用 http.DefaultClient
-func NewClient(TokenService mp.TokenService, HttpClient *http.Client) *Client {
-	if TokenService == nil {
-		panic("TokenService == nil")
+func NewClient(TokenServer mp.TokenServer, HttpClient *http.Client) *Client {
+	if TokenServer == nil {
+		panic("TokenServer == nil")
 	}
 	if HttpClient == nil {
 		HttpClient = http.DefaultClient
@@ -28,8 +28,8 @@ func NewClient(TokenService mp.TokenService, HttpClient *http.Client) *Client {
 
 	return &Client{
 		WechatClient: mp.WechatClient{
-			TokenService: TokenService,
-			HttpClient:   HttpClient,
+			TokenServer: TokenServer,
+			HttpClient:  HttpClient,
 		},
 	}
 }
@@ -92,6 +92,11 @@ func (clt *Client) AddTemplate(templateIdShort string) (templateId string, err e
 
 // 发送模板消息
 func (clt *Client) Send(msg *TemplateMessage) (msgid int64, err error) {
+	if msg == nil {
+		err = errors.New("nil TemplateMessage")
+		return
+	}
+
 	var result struct {
 		mp.Error
 		MsgId int64 `json:"msgid"`

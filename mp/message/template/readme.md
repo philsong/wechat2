@@ -10,7 +10,7 @@ import (
 	"github.com/chanxuehong/wechat2/mp/message/template"
 )
 
-var TokenService = mp.NewDefaultTokenService("appid", "appsecret", nil)
+var TokenServer = mp.NewDefaultTokenServer("appid", "appsecret", nil)
 
 func main() {
 	type Item struct {
@@ -76,14 +76,14 @@ func main() {
 	}
 
 	msg := template.TemplateMessage{
-		ToUser:     "touser",
-		TemplateId: "template_id",
-		URL:        "http://weixin.qq.com/download",
-		TopColor:   "#FF0000",
-		Data:       dataJSONBytes,
+		ToUser:      "touser",
+		TemplateId:  "template_id",
+		URL:         "http://weixin.qq.com/download",
+		TopColor:    "#FF0000",
+		RawJSONData: dataJSONBytes,
 	}
 
-	clt := template.NewClient(TokenService, nil)
+	clt := template.NewClient(TokenServer, nil)
 	msgId, err := clt.Send(&msg)
 	if err != nil {
 		fmt.Println(err)

@@ -16,5 +16,5 @@ type TemplateMessage struct {
 	TopColor   string `json:"topcolor,omitempty"` // 可选, 整个消息的颜色, 可以不设置
 
 	// 必须, JSON 格式的 []byte, 满足特定的模板需求
-	Data json.RawMessage `json:"data"`
+	RawJSONData json.RawMessage `json:"data"`
 }

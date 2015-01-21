@@ -5,11 +5,11 @@
 
 package mp
 
-// access_token 伺服接口, 用于集中式获取 access_token 场景, see token_service.png.
-type TokenService interface {
-	// 获取 access_token, 该 access_token 一般缓存在某个地方.
+// access_token 中控服务器接口, see token_server.png.
+type TokenServer interface {
+	// 从中控服务器获取 access_token, 该 access_token 一般缓存在某个地方.
 	Token() (token string, err error)
 
-	// 从微信服务器获取新的 access_token.
+	// 请求 access_token 中控服务器到微信服务器刷新 access_token.
 	TokenRefresh() (token string, err error)
 }

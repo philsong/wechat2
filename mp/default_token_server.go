@@ -17,11 +17,13 @@ import (
 
 const defaultTickDuration = time.Minute // 设置 44 秒以上就不会超过限制(2000次/日)
 
-var _ TokenService = new(DefaultTokenService)
+var _ TokenServer = new(DefaultTokenServer)
 
-// TokenService 的简单实现.
-// NOTE: 一般用于单进程环境, 整个系统只能存在一个 DefaultTokenService 实例!!!
-type DefaultTokenService struct {
+// TokenServer 的简单实现.
+// NOTE:
+// 一般用于单进程环境, 因为 DefaultTokenServer 同时也实现了一个简单的中控服务器, 而不是简单的
+// 实现了 TokenServer 接口, 所以整个系统只能存在一个 DefaultTokenServer 实例!!!
+type DefaultTokenServer struct {
 	appid, appsecret string
 	httpClient       *http.Client
 
@@ -38,16 +40,16 @@ type DefaultTokenService struct {
 	resetTokenRefreshTickChan chan time.Duration
 }
 
-// 创建一个新的 DefaultTokenService.
+// 创建一个新的 DefaultTokenServer.
 //  如果 httpClient == nil 则默认使用 http.DefaultClient.
-func NewDefaultTokenService(appid, appsecret string,
-	httpClient *http.Client) (srv *DefaultTokenService) {
+func NewDefaultTokenServer(appid, appsecret string,
+	httpClient *http.Client) (srv *DefaultTokenServer) {
 
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
 
-	srv = &DefaultTokenService{
+	srv = &DefaultTokenServer{
 		appid:                     appid,
 		appsecret:                 appsecret,
 		httpClient:                httpClient,
@@ -69,7 +71,7 @@ func NewDefaultTokenService(appid, appsecret string,
 	return
 }
 
-func (srv *DefaultTokenService) Token() (token string, err error) {
+func (srv *DefaultTokenServer) Token() (token string, err error) {
 	srv.currentToken.rwmutex.RLock()
 	token = srv.currentToken.token
 	err = srv.currentToken.err
@@ -77,7 +79,7 @@ func (srv *DefaultTokenService) Token() (token string, err error) {
 	return
 }
 
-func (srv *DefaultTokenService) TokenRefresh() (token string, err error) {
+func (srv *DefaultTokenServer) TokenRefresh() (token string, err error) {
 	resp, err := srv.getToken()
 	if err != nil {
 		srv.currentToken.rwmutex.Lock()
@@ -101,7 +103,7 @@ func (srv *DefaultTokenService) TokenRefresh() (token string, err error) {
 
 // 单独一个 goroutine 来定时获取 access_token.
 //  tickDuration: 启动后初始 tickDuration.
-func (srv *DefaultTokenService) tokenAutoUpdate(tickDuration time.Duration) {
+func (srv *DefaultTokenServer) tokenAutoUpdate(tickDuration time.Duration) {
 	var ticker *time.Ticker
 
 NEW_TICK_DURATION:
@@ -149,7 +151,7 @@ type tokenResponse struct {
 }
 
 // 从微信服务器获取 access_token.
-func (srv *DefaultTokenService) getToken() (resp *tokenResponse, err error) {
+func (srv *DefaultTokenServer) getToken() (resp *tokenResponse, err error) {
 	url := "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" +
 		srv.appid + "&secret=" + srv.appsecret
 

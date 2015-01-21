@@ -10,7 +10,7 @@ import (
 	"github.com/chanxuehong/wechat2/mp/menu"
 )
 
-var TokenService = mp.NewDefaultTokenService("appid", "appsecret", nil)
+var TokenServer = mp.NewDefaultTokenServer("appid", "appsecret", nil)
 
 func main() {
 	var subButtons = make([]menu.Button, 2)
@@ -23,7 +23,7 @@ func main() {
 	mn.Buttons[1].SetAsViewButton("视频", "http://v.qq.com/")
 	mn.Buttons[2].SetAsSubMenuButton("菜单", subButtons)
 
-	clt := menu.NewClient(TokenService, nil)
+	clt := menu.NewClient(TokenServer, nil)
 	if err := clt.CreateMenu(mn); err != nil {
 		fmt.Println(err)
 		return
