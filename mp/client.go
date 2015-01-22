@@ -105,7 +105,7 @@ func (clt *WechatClient) GetNewToken() (token string, err error) {
 //  NOTE:
 //  1. 一般不用调用这个方法, 请直接调用高层次的封装方法;
 //  2. 最终的 URL == incompleteURL + access_token;
-//  3. response 要求是 struct 的指针, 并且有该 struct 拥有这个属性:
+//  3. response 要求是 struct 的指针, 并且该 struct 拥有属性:
 //     ErrCode int `json:"errcode"` (可以是直接属性, 也可以是匿名属性里的属性)
 func (clt *WechatClient) PostJSON(incompleteURL string, request interface{}, response interface{}) (err error) {
 	buf := textBufferPool.Get().(*bytes.Buffer)
@@ -176,7 +176,7 @@ RETRY:
 //  NOTE:
 //  1. 一般不用调用这个方法, 请直接调用高层次的封装方法;
 //  2. 最终的 URL == incompleteURL + access_token;
-//  3. response 要求是 struct 的指针, 并且有该 struct 拥有这个属性:
+//  3. response 要求是 struct 的指针, 并且该 struct 拥有属性:
 //     ErrCode int `json:"errcode"` (可以是直接属性, 也可以是匿名属性里的属性)
 func (clt *WechatClient) GetJSON(incompleteURL string, response interface{}) (err error) {
 	token, err := clt.Token()

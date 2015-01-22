@@ -3,15 +3,5 @@
 // @license     https://github.com/chanxuehong/wechat2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-package media
-
-import (
-	"bytes"
-	"sync"
-)
-
-var mediaBufferPool = sync.Pool{
-	New: func() interface{} {
-		return bytes.NewBuffer(make([]byte, 0, 10<<20)) // 默认 10MB
-	},
-}
+// 多客服接口.
+package dkf
