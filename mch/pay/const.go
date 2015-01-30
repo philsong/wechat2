@@ -3,5 +3,14 @@
 // @license     https://github.com/chanxuehong/wechat2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-// 微信公众平台开发 SDK
-package wechat2
+package pay
+
+const (
+	ReturnCodeSuccess = "SUCCESS"
+	ReturnCodeFail    = "FAIL"
+)
+
+const (
+	ResultCodeSuccess = "SUCCESS"
+	ResultCodeFail    = "FAIL"
+)

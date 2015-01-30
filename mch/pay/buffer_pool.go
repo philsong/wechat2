@@ -3,5 +3,15 @@
 // @license     https://github.com/chanxuehong/wechat2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-// 微信公众平台开发 SDK
-package wechat2
+package pay
+
+import (
+	"bytes"
+	"sync"
+)
+
+var textBufferPool = sync.Pool{
+	New: func() interface{} {
+		return bytes.NewBuffer(make([]byte, 0, 16<<10)) // 16KB
+	},
+}

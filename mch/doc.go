@@ -3,5 +3,5 @@
 // @license     https://github.com/chanxuehong/wechat2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-// 微信公众平台开发 SDK
-package wechat2
+// 微信商家平台
+package mch
