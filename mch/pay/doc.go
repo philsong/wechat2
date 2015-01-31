@@ -4,4 +4,5 @@
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
 // 微信支付接口.
+//  http://pay.weixin.qq.com/wiki/doc/api/index.php
 package pay

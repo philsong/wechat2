@@ -16,24 +16,24 @@ type WechatServerFrontend struct {
 	invalidRequestHandler InvalidRequestHandler
 }
 
-func NewWechatServerFrontend(wechatServer WechatServer, invalidRequestHandler InvalidRequestHandler) *WechatServerFrontend {
-	if wechatServer == nil {
-		panic("mp: nil wechatServer")
+func NewWechatServerFrontend(server WechatServer, handler InvalidRequestHandler) *WechatServerFrontend {
+	if server == nil {
+		panic("mp: nil WechatServer")
 	}
-	if invalidRequestHandler == nil {
-		invalidRequestHandler = DefaultInvalidRequestHandler
+	if handler == nil {
+		handler = DefaultInvalidRequestHandler
 	}
 
 	return &WechatServerFrontend{
-		wechatServer:          wechatServer,
-		invalidRequestHandler: invalidRequestHandler,
+		wechatServer:          server,
+		invalidRequestHandler: handler,
 	}
 }
 
 // 实现 http.Handler.
-func (front *WechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	wechatServer := front.wechatServer
-	invalidRequestHandler := front.invalidRequestHandler
+func (frontend *WechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	wechatServer := frontend.wechatServer
+	invalidRequestHandler := frontend.invalidRequestHandler
 
 	urlValues, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {

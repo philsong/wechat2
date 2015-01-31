@@ -56,7 +56,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
 				return
 			}
-			if subtle.ConstantTimeCompare([]byte(haveAppId), []byte(wantAppId)) != 1 {
+			if subtle.ConstantTimeCompare([]byte(haveMchId), []byte(wantMchId)) != 1 {
 				err = fmt.Errorf("the message's mch_id mismatch, have: %s, want: %s", haveMchId, wantMchId)
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
 				return

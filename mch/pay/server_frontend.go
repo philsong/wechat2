@@ -9,9 +9,9 @@ import (
 	"net/http"
 )
 
-// 这个 MessageServerFrontend 既可以处理扫码原生支付模式一的回调请求, 也可以处理支付通知消息.
+// 处理单个APP的消息.
 type MessageServerFrontend struct {
-	messageServer         MessageServer
+	server                MessageServer
 	invalidRequestHandler InvalidRequestHandler
 }
 
@@ -24,14 +24,14 @@ func NewMessageServerFrontend(server MessageServer, handler InvalidRequestHandle
 	}
 
 	return &MessageServerFrontend{
-		messageServer:         server,
+		server:                server,
 		invalidRequestHandler: handler,
 	}
 }
 
 // 实现 http.Handler.
 func (frontend *MessageServerFrontend) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	messageServer := frontend.messageServer
+	messageServer := frontend.server
 	invalidRequestHandler := frontend.invalidRequestHandler
 
 	ServeHTTP(w, r, nil, messageServer, invalidRequestHandler)
