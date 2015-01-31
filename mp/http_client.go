@@ -34,7 +34,7 @@ import (
 // }
 
 // 一般请求的 http.Client
-var CommonHttpClient = &http.Client{
+var TextHttpClient = &http.Client{
 	Transport: &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		Dial: (&net.Dialer{
