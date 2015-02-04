@@ -26,7 +26,7 @@ var zeroAESKey [32]byte
 // 安全模式 和 兼容模式, 微信服务器推送过来的 http body
 type RequestHttpBody struct {
 	XMLName      struct{} `xml:"xml" json:"-"`
-	MixedMessage          // ToUserName 一致有效
+	MixedMessage          // ToUserName 始终有效
 	EncryptedMsg string   `xml:"Encrypt" json:"Encrypt"`
 }
 
@@ -66,8 +66,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 			//	return
 			//}
 
-			// 首先验证密文签名
-
+			// 首先验证密文签名长度
 			if len(msgSignature1) != 40 {
 				err = fmt.Errorf("the length of msg_signature mismatch, have: %d, want: 40", len(msgSignature1))
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
@@ -82,7 +81,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 
 			// 安全考虑验证下 ToUserName
 			haveToUserName := requestHttpBody.ToUserName
-			wantToUserName := wechatServer.Id()
+			wantToUserName := wechatServer.WechatId()
 			if len(haveToUserName) != len(wantToUserName) {
 				err = fmt.Errorf("the RequestHttpBody's ToUserName mismatch, have: %s, want: %s", haveToUserName, wantToUserName)
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
@@ -94,15 +93,17 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				return
 			}
 
-			WechatToken := wechatServer.Token()
-			msgSignature2 := util.MsgSign(WechatToken, timestampStr, nonce, requestHttpBody.EncryptedMsg)
+			wechatToken := wechatServer.Token()
+
+			// 验证签名
+			msgSignature2 := util.MsgSign(wechatToken, timestampStr, nonce, requestHttpBody.EncryptedMsg)
 			if subtle.ConstantTimeCompare([]byte(msgSignature1), []byte(msgSignature2)) != 1 {
 				err = fmt.Errorf("check signature failed, input: %s, local: %s", msgSignature1, msgSignature2)
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
 				return
 			}
 
-			// 验证签名成功, 解密
+			// 解密
 			EncryptedMsgBytes, err := base64.StdEncoding.DecodeString(requestHttpBody.EncryptedMsg)
 			if err != nil {
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
@@ -158,7 +159,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				Random:       Random,
 
 				WechatId:    wantToUserName,
-				WechatToken: WechatToken,
+				WechatToken: wechatToken,
 				WechatAppId: WechatAppId,
 			}
 			wechatServer.MessageHandler().ServeMessage(w, r)
@@ -194,7 +195,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 
 			// 安全考虑验证 ToUserName
 			haveToUserName := MixedMsg.ToUserName
-			wantToUserName := wechatServer.Id()
+			wantToUserName := wechatServer.WechatId()
 			if len(haveToUserName) != len(wantToUserName) {
 				err = fmt.Errorf("the message's ToUserName mismatch, have: %s, want: %s", haveToUserName, wantToUserName)
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)

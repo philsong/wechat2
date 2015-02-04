@@ -27,7 +27,7 @@ func main() {
 	messageServeMux := mp.NewMessageServeMux()
 	messageServeMux.EventHandleFunc(menu.EventTypeClick, MenuClickEventHandler)
 
-	wechatServer := mp.NewDefaultWechatServer("id", "token", "appid", messageServeMux, aesKey)
+	wechatServer := mp.NewDefaultWechatServer("id", "token", "appid", aesKey, messageServeMux)
 
 	wechatServerFrontend := mp.NewWechatServerFrontend(wechatServer, nil)
 
@@ -63,7 +63,7 @@ func main() {
 	messageServeMux1 := mp.NewMessageServeMux()
 	messageServeMux1.EventHandleFunc(menu.EventTypeClick, MenuClickEventHandler)
 
-	wechatServer1 := mp.NewDefaultWechatServer("id1", "token1", "appid1", messageServeMux1, aesKey1)
+	wechatServer1 := mp.NewDefaultWechatServer("id1", "token1", "appid1", aesKey1, messageServeMux1)
 
 	aesKey2, err := util.AESKeyDecode("encodedAESKey2")
 	if err != nil {
@@ -73,7 +73,7 @@ func main() {
 	messageServeMux2 := mp.NewMessageServeMux()
 	messageServeMux2.EventHandleFunc(menu.EventTypeClick, MenuClickEventHandler)
 
-	wechatServer2 := mp.NewDefaultWechatServer("id2", "token2", "appid2", messageServeMux2, aesKey2)
+	wechatServer2 := mp.NewDefaultWechatServer("id2", "token2", "appid2", aesKey2, messageServeMux2)
 
 	var multiWechatServerFrontend mp.MultiWechatServerFrontend
 	multiWechatServerFrontend.SetWechatServer("wechat1", wechatServer1)

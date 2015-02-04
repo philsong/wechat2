@@ -14,8 +14,8 @@ import (
 
 // 回调 URL 上索引 WechatServer 的 key 的名称.
 //  比如下面的回调地址里面就可以根据 wechat1 来索引对应的 WechatServer.
-//  http://www.xxx.com/?wechatserverkey=wechat1&signature=XXX&timestamp=123456789&nonce=12345678
-const URLQueryWechatServerKeyName = "wechatserverkey"
+//  http://www.xxx.com/?wechat_server=wechat1&signature=XXX&timestamp=123456789&nonce=12345678
+const URLQueryWechatServerKeyName = "wechat_server"
 
 // 多个 WechatServer 的前端, 负责处理 http 请求, net/http.Handler 的实现
 //
@@ -24,11 +24,11 @@ const URLQueryWechatServerKeyName = "wechatserverkey"
 //  查询参数，参考常量 URLQueryWechatServerKeyName，这个参数的值就是 MultiWechatServerFrontend
 //  索引 WechatServer 的 key。
 //
-//  例如回调 URL 为 http://www.xxx.com/weixin?wechatserverkey=1234567890，那么就可以在后端调用
+//  例如回调 URL 为 http://www.xxx.com/weixin?wechat_server=1234567890，那么就可以在后端调用
 //
 //    MultiWechatServerFrontend.SetWechatServer("1234567890", WechatServer)
 //
-//  来增加一个 WechatServer 来处理 wechatserverkey=1234567890 的消息（事件）。
+//  来增加一个 WechatServer 来处理 wechat_server=1234567890 的消息（事件）。
 //
 //  MultiWechatServerFrontend 并发安全，可以在运行中动态增加和删除 WechatServer。
 type MultiWechatServerFrontend struct {
@@ -122,7 +122,8 @@ func (frontend *MultiWechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *h
 		invalidRequestHandler = DefaultInvalidRequestHandler
 	}
 	if wechatServer == nil {
-		invalidRequestHandler.ServeInvalidRequest(w, r, fmt.Errorf("Not found WechatServer for %s == %s", URLQueryWechatServerKeyName, serverKey))
+		err = fmt.Errorf("Not found WechatServer for %s == %s", URLQueryWechatServerKeyName, serverKey)
+		invalidRequestHandler.ServeInvalidRequest(w, r, err)
 		return
 	}
 

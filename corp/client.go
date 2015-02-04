@@ -3,7 +3,7 @@
 // @license     https://github.com/chanxuehong/wechat2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-package mp
+package corp
 
 import (
 	"bytes"
@@ -17,34 +17,39 @@ import (
 	wechatjson "github.com/chanxuehong/wechat2/json"
 )
 
-// 微信公众号"主动"请求功能的基本封装.
-type WechatClient struct {
+// CorpClient 封装了主动请求功能.
+type CorpClient struct {
 	accessToken string // 缓存当前的 access_token
 
-	TokenServer TokenServer
+	// 使用 TokenCache 而不是和公众平台一样使用 TokenServer 是因为企业号如果使用 TokenServer
+	// 则 access_token 会一直不变, 这样对于安全是不利的!
+	TokenCache  TokenCache
+	TokenGetter TokenGetter
 	HttpClient  *http.Client
 }
 
-// 获取 access_token.
-func (clt *WechatClient) Token() (token string, err error) {
-	token, err = clt.TokenServer.Token()
-	if err != nil {
+// 从缓存中获取 access_token, 如果缓存中没有则从微信服务器获取.
+func (clt *CorpClient) Token() (token string, err error) {
+	token, err = clt.TokenCache.Token()
+	switch {
+	case err == nil:
+		clt.accessToken = token
+		return
+	case err == ErrCacheMiss:
+		return clt.TokenRefresh()
+	default:
 		clt.accessToken = ""
 		return
 	}
-	clt.accessToken = token
-	return
 }
 
-// 请求微信服务器更新 access_token.
-//  NOTE:
-//  1. 一般情况下无需调用该函数, 请使用 Token() 获取 access_token.
-//  2. 即使 access_token 失效(错误代码 40001, 正常情况下不会出现),
-//     也请谨慎调用 TokenRefresh, 建议直接返回错误! 因为很有可能高并发情况下造成雪崩效应!
-//  3. 再次强调, 调用这个函数你应该知道发生了什么!!!
-func (clt *WechatClient) TokenRefresh() (token string, err error) {
-	token, err = clt.TokenServer.TokenRefresh()
-	if err != nil {
+// 从微信服务器获取 access_token 并更新到 TokenCache.
+func (clt *CorpClient) TokenRefresh() (token string, err error) {
+	if token, err = clt.TokenGetter.GetToken(); err != nil {
+		clt.accessToken = ""
+		return
+	}
+	if err = clt.TokenCache.PutToken(token); err != nil {
 		clt.accessToken = ""
 		return
 	}
@@ -59,27 +64,15 @@ func getRetryNum() int {
 	return mathRand.Intn(5) + 2
 }
 
-// 当 WechatClient.Token() 返回的 access_token 失效时获取新的 access_token.
-func (clt *WechatClient) GetNewToken() (token string, err error) {
-	// 失效有两种可能:
-	// 1. 中控服务器更新了 access_token, 但是没有及时更新到缓存, 导致此次 WechatClient.Token()
-	//    获取到的不是有效的 access_token;
-	//    (NOTE: 目前这种情况基本不会出现, 微信服务器兼容更新时刻多个 access_token 都有效)
-	// 2. 就是微信服务器主动失效了 access_token, 但是中控服务器不知道这个情况而没有及时更新
-	//    access_token, 所以这个时候就需要主动刷新 access_token.
-
-	// 策略:
-	//     先到中控服务器去查询是否有新的 access_token, 如果没有新的 access_token 则请求调用
-	// WechatClient.TokenRefresh() 返回 access_token.
-	//     这样就有一个问题, 就是高并发的时候如果某个时刻大家都发现 access_token 失效, 而同时去
-	// 中控服务器查询不到新的 access_token, 那么都会调用 WechatClient.TokenRefresh(), 这样
-	// 可能造成调用次数超过限制, 这里用随机数的方法来"尽量"解决这个问题, 控制 WechatClient
-	// "尽量" 不同时去调用 WechatClient.TokenRefresh(), 这样一来后面的 WechatClient 就可以从
-	// 中控服务器获取到 access_token 了.
+// 当 CorpClient.Token() 返回的 access_token 过期时获取新的 access_token.
+func (clt *CorpClient) GetNewToken() (token string, err error) {
 	retryNum := getRetryNum()
 	for i := 0; ; {
-		token, err = clt.TokenServer.Token()
+		token, err = clt.TokenCache.Token()
 		if err != nil {
+			if err == ErrCacheMiss {
+				return clt.TokenRefresh() // 刷新 access_token
+			}
 			clt.accessToken = ""
 			return
 		}
@@ -104,7 +97,7 @@ func (clt *WechatClient) GetNewToken() (token string, err error) {
 //  2. 最终的 URL == incompleteURL + access_token;
 //  3. response 要求是 struct 的指针, 并且该 struct 拥有属性:
 //     ErrCode int `json:"errcode"` (可以是直接属性, 也可以是匿名属性里的属性)
-func (clt *WechatClient) PostJSON(incompleteURL string, request interface{}, response interface{}) (err error) {
+func (clt *CorpClient) PostJSON(incompleteURL string, request interface{}, response interface{}) (err error) {
 	buf := textBufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
 	defer textBufferPool.Put(buf)
@@ -153,7 +146,7 @@ RETRY:
 	switch ErrCode {
 	case ErrCodeOK:
 		return
-	case ErrCodeInvalidCredential, ErrCodeTimeout:
+	case ErrCodeTimeout, ErrCodeInvalidCredential:
 		if !hasRetried {
 			hasRetried = true
 
@@ -175,7 +168,7 @@ RETRY:
 //  2. 最终的 URL == incompleteURL + access_token;
 //  3. response 要求是 struct 的指针, 并且该 struct 拥有属性:
 //     ErrCode int `json:"errcode"` (可以是直接属性, 也可以是匿名属性里的属性)
-func (clt *WechatClient) GetJSON(incompleteURL string, response interface{}) (err error) {
+func (clt *CorpClient) GetJSON(incompleteURL string, response interface{}) (err error) {
 	token, err := clt.Token()
 	if err != nil {
 		return
@@ -215,7 +208,7 @@ RETRY:
 	switch ErrCode {
 	case ErrCodeOK:
 		return
-	case ErrCodeInvalidCredential, ErrCodeTimeout:
+	case ErrCodeTimeout, ErrCodeInvalidCredential:
 		if !hasRetried {
 			hasRetried = true
 

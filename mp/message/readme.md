@@ -40,7 +40,7 @@ func main() {
 	messageServeMux.MessageHandleFunc(request.MsgTypeText, TextMessageHandler)
 	messageServeMux.EventHandleFunc(request.EventTypeLocation, LocationEventHandler)
 
-	wechatServer := mp.NewDefaultWechatServer("id", "token", "appid", messageServeMux, aesKey)
+	wechatServer := mp.NewDefaultWechatServer("id", "token", "appid", aesKey, messageServeMux)
 
 	wechatServerFrontend := mp.NewWechatServerFrontend(wechatServer, nil)
 
