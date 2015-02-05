@@ -9,10 +9,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"reflect"
-	"time"
 
 	wechatjson "github.com/chanxuehong/wechat2/json"
 )
@@ -52,13 +50,6 @@ func (clt *WechatClient) TokenRefresh() (token string, err error) {
 	return
 }
 
-var mathRand = rand.New(rand.NewSource(time.Now().UnixNano()))
-
-// 返回一个 [2, 7) 的随机数.
-func getRetryNum() int {
-	return mathRand.Intn(5) + 2
-}
-
 // 当 WechatClient.Token() 返回的 access_token 失效时获取新的 access_token.
 func (clt *WechatClient) GetNewToken() (token string, err error) {
 	// 失效有两种可能:
@@ -71,29 +62,16 @@ func (clt *WechatClient) GetNewToken() (token string, err error) {
 	// 策略:
 	//     先到中控服务器去查询是否有新的 access_token, 如果没有新的 access_token 则请求调用
 	// WechatClient.TokenRefresh() 返回 access_token.
-	//     这样就有一个问题, 就是高并发的时候如果某个时刻大家都发现 access_token 失效, 而同时去
-	// 中控服务器查询不到新的 access_token, 那么都会调用 WechatClient.TokenRefresh(), 这样
-	// 可能造成调用次数超过限制, 这里用随机数的方法来"尽量"解决这个问题, 控制 WechatClient
-	// "尽量" 不同时去调用 WechatClient.TokenRefresh(), 这样一来后面的 WechatClient 就可以从
-	// 中控服务器获取到 access_token 了.
-	retryNum := getRetryNum()
-	for i := 0; ; {
-		token, err = clt.TokenServer.Token()
-		if err != nil {
-			clt.accessToken = ""
-			return
-		}
-		if clt.accessToken != token {
-			clt.accessToken = token
-			return
-		}
-
-		if i++; i < retryNum { // 这样写是避免最后一次还要等 50ms
-			time.Sleep(50 * time.Millisecond) // 50ms 后再次尝试获取 access_token
-			continue
-		}
-		return clt.TokenRefresh() // 刷新 access_token
+	token, err = clt.TokenServer.Token()
+	if err != nil {
+		clt.accessToken = ""
+		return
 	}
+	if clt.accessToken != token {
+		clt.accessToken = token
+		return
+	}
+	return clt.TokenRefresh()
 }
 
 // 用 encoding/json 把 request marshal 为 JSON, 放入 http 请求的 body 中,

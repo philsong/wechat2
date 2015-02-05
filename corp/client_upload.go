@@ -154,7 +154,7 @@ RETRY:
 		if !hasRetried {
 			hasRetried = true
 
-			if token, err = clt.GetNewToken(); err != nil {
+			if token, err = clt.getNewToken(); err != nil {
 				return
 			}
 			goto RETRY
@@ -230,7 +230,7 @@ RETRY:
 		if !hasRetried {
 			hasRetried = true
 
-			if token, err = clt.GetNewToken(); err != nil {
+			if token, err = clt.getNewToken(); err != nil {
 				return
 			}
 			goto RETRY
@@ -314,7 +314,7 @@ RETRY:
 		if !hasRetried {
 			hasRetried = true
 
-			if token, err = clt.GetNewToken(); err != nil {
+			if token, err = clt.getNewToken(); err != nil {
 				return
 			}
 			goto RETRY
@@ -398,7 +398,7 @@ RETRY:
 		if !hasRetried {
 			hasRetried = true
 
-			if token, err = clt.GetNewToken(); err != nil {
+			if token, err = clt.getNewToken(); err != nil {
 				return
 			}
 			goto RETRY
@@ -470,7 +470,7 @@ RETRY:
 		if !hasRetried {
 			hasRetried = true
 
-			if token, err = clt.GetNewToken(); err != nil {
+			if token, err = clt.getNewToken(); err != nil {
 				return
 			}
 			goto RETRY

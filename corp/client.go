@@ -9,47 +9,24 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"reflect"
-	"time"
 
 	wechatjson "github.com/chanxuehong/wechat2/json"
 )
 
-// CorpClient 封装了主动请求功能.
+// 企业号"主动"请求功能的基本封装.
 type CorpClient struct {
 	accessToken string // 缓存当前的 access_token
 
-	// 使用 TokenCache 而不是和公众平台一样使用 TokenServer 是因为企业号如果使用 TokenServer
-	// 则 access_token 会一直不变, 这样对于安全是不利的!
-	TokenCache  TokenCache
-	TokenGetter TokenGetter
+	TokenServer TokenServer
 	HttpClient  *http.Client
 }
 
-// 从缓存中获取 access_token, 如果缓存中没有则从微信服务器获取.
+// 获取 access_token.
 func (clt *CorpClient) Token() (token string, err error) {
-	token, err = clt.TokenCache.Token()
-	switch {
-	case err == nil:
-		clt.accessToken = token
-		return
-	case err == ErrCacheMiss:
-		return clt.TokenRefresh()
-	default:
-		clt.accessToken = ""
-		return
-	}
-}
-
-// 从微信服务器获取 access_token 并更新到 TokenCache.
-func (clt *CorpClient) TokenRefresh() (token string, err error) {
-	if token, err = clt.TokenGetter.GetToken(); err != nil {
-		clt.accessToken = ""
-		return
-	}
-	if err = clt.TokenCache.PutToken(token); err != nil {
+	token, err = clt.TokenServer.Token()
+	if err != nil {
 		clt.accessToken = ""
 		return
 	}
@@ -57,36 +34,38 @@ func (clt *CorpClient) TokenRefresh() (token string, err error) {
 	return
 }
 
-var mathRand = rand.New(rand.NewSource(time.Now().UnixNano()))
-
-// 返回一个 [2, 7) 的随机数.
-func getRetryNum() int {
-	return mathRand.Intn(5) + 2
+// 请求微信服务器更新 access_token.
+func (clt *CorpClient) TokenRefresh() (token string, err error) {
+	token, err = clt.TokenServer.TokenRefresh()
+	if err != nil {
+		clt.accessToken = ""
+		return
+	}
+	clt.accessToken = token
+	return
 }
 
-// 当 CorpClient.Token() 返回的 access_token 过期时获取新的 access_token.
-func (clt *CorpClient) GetNewToken() (token string, err error) {
-	retryNum := getRetryNum()
-	for i := 0; ; {
-		token, err = clt.TokenCache.Token()
-		if err != nil {
-			if err == ErrCacheMiss {
-				return clt.TokenRefresh() // 刷新 access_token
-			}
-			clt.accessToken = ""
-			return
-		}
-		if clt.accessToken != token {
-			clt.accessToken = token
-			return
-		}
+// 当 CorpClient.Token() 返回的 access_token 失效时获取新的 access_token.
+func (clt *CorpClient) getNewToken() (token string, err error) {
+	// 失效有两种可能:
+	// 1. 中控服务器更新了 access_token, 但是没有及时更新到缓存, 导致此次 WechatClient.Token()
+	//    获取到的不是有效的 access_token;
+	// 2. 就是微信服务器主动失效了 access_token, 但是中控服务器不知道这个情况而没有及时更新
+	//    access_token, 所以这个时候就需要主动刷新 access_token.
 
-		if i++; i < retryNum { // 这样写是避免最后一次还要等 50ms
-			time.Sleep(50 * time.Millisecond) // 50ms 后再次尝试获取 access_token
-			continue
-		}
-		return clt.TokenRefresh() // 刷新 access_token
+	// 策略:
+	//     先到中控服务器去查询是否有新的 access_token, 如果没有新的 access_token 则请求调用
+	// WechatClient.TokenRefresh() 返回 access_token.
+	token, err = clt.TokenServer.Token()
+	if err != nil {
+		clt.accessToken = ""
+		return
 	}
+	if clt.accessToken != token {
+		clt.accessToken = token
+		return
+	}
+	return clt.TokenRefresh()
 }
 
 // 用 encoding/json 把 request marshal 为 JSON, 放入 http 请求的 body 中,
@@ -150,7 +129,7 @@ RETRY:
 		if !hasRetried {
 			hasRetried = true
 
-			if token, err = clt.GetNewToken(); err != nil {
+			if token, err = clt.getNewToken(); err != nil {
 				return
 			}
 			goto RETRY
@@ -212,7 +191,7 @@ RETRY:
 		if !hasRetried {
 			hasRetried = true
 
-			if token, err = clt.GetNewToken(); err != nil {
+			if token, err = clt.getNewToken(); err != nil {
 				return
 			}
 			goto RETRY

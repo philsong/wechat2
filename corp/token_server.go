@@ -3,7 +3,7 @@
 // @license     https://github.com/chanxuehong/wechat2/blob/master/LICENSE
 // @authors     chanxuehong(chanxuehong@gmail.com)
 
-package mp
+package corp
 
 // access_token 中控服务器接口, see token_server.png.
 type TokenServer interface {
