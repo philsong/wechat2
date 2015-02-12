@@ -36,14 +36,12 @@ func (frontend *WechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *http.R
 	wechatServer := frontend.wechatServer
 	invalidRequestHandler := frontend.invalidRequestHandler
 
-	fmt.Println("r.URL.RawQuery=", r.URL.RawQuery)
 	urlValues, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
 		fmt.Println("err", err)
 		invalidRequestHandler.ServeInvalidRequest(w, r, err)
 		return
 	}
-	fmt.Println("urlValues=", urlValues)
 
 	ServeHTTP(w, r, urlValues, wechatServer, invalidRequestHandler)
 }

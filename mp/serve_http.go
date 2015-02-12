@@ -38,7 +38,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 	fmt.Println("ServeHTTP...", r.Method, urlValues)
 
 	switch r.Method {
-	case "POST": // 消息处理
+	case "", "POST": // 消息处理
 		signature1, timestampStr, nonce, encryptType, msgSignature1, err := parsePostURLQuery(urlValues)
 		if err != nil {
 			invalidRequestHandler.ServeInvalidRequest(w, r, err)
