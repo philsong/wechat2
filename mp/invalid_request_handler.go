@@ -6,7 +6,6 @@
 package mp
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -22,4 +21,4 @@ func (fn InvalidRequestHandlerFunc) ServeInvalidRequest(w http.ResponseWriter, r
 	fn(w, r, err)
 }
 
-var DefaultInvalidRequestHandler = InvalidRequestHandlerFunc(func(http.ResponseWriter,r *http.Request, error) {})
+var DefaultInvalidRequestHandler = InvalidRequestHandlerFunc(func(http.ResponseWriter, *http.Request, error) {})
