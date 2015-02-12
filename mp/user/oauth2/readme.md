@@ -12,9 +12,9 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/chanxuehong/session"
-	"github.com/chanxuehong/util/random"
-	"github.com/chanxuehong/wechat2/mp/user/oauth2"
+	"github.com/philsong/session"
+	"github.com/philsong/util/random"
+	"github.com/philsong/wechat2/mp/user/oauth2"
 )
 
 var (
@@ -120,9 +120,9 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/chanxuehong/session"
-	"github.com/chanxuehong/util/random"
-	"github.com/chanxuehong/wechat2/mp/user/oauth2"
+	"github.com/philsong/session"
+	"github.com/philsong/util/random"
+	"github.com/philsong/wechat2/mp/user/oauth2"
 )
 
 var (

@@ -10,11 +10,11 @@ QQ群：    297489459
 ## 安装
 通过执行下列语句就可以完成安装
 
-	go get -u github.com/chanxuehong/wechat2/...
+	go get -u github.com/philsong/wechat2/...
 
 ## 文档
 
-#### [在线文档](http://godoc.org/github.com/chanxuehong/wechat2)
+#### [在线文档](http://godoc.org/github.com/philsong/wechat2)
 
 #### 离线文档
 通过上面步骤下载下来后，可以在shell(windows 下面是 cmd) 里运行
@@ -32,11 +32,11 @@ QQ群：    297489459
 
 资金捐助：
 
-![捐助wechat](https://github.com/chanxuehong/wechat2/blob/master/alipay.png)
+![捐助wechat](https://github.com/philsong/wechat2/blob/master/alipay.png)
 
 支付宝账户: 15967396@qq.com
 
-#### [捐助者列表](https://github.com/chanxuehong/wechat2/blob/master/donors.md)
+#### [捐助者列表](https://github.com/philsong/wechat2/blob/master/donors.md)
 
 
 ## 授权(LICENSE)

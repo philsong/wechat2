@@ -7,10 +7,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/chanxuehong/wechat2/mp"
-	"github.com/chanxuehong/wechat2/mp/message/request"
-	"github.com/chanxuehong/wechat2/mp/message/response"
-	"github.com/chanxuehong/wechat2/util"
+	"github.com/philsong/wechat2/mp"
+	"github.com/philsong/wechat2/mp/message/request"
+	"github.com/philsong/wechat2/mp/message/response"
+	"github.com/philsong/wechat2/util"
 )
 
 // 处理普通文本消息, 原样返回

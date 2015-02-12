@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/chanxuehong/wechat2/mp"
-	"github.com/chanxuehong/wechat2/mp/message/template"
+	"github.com/philsong/wechat2/mp"
+	"github.com/philsong/wechat2/mp/message/template"
 )
 
 var TokenServer = mp.NewDefaultTokenServer("appid", "appsecret", nil)
