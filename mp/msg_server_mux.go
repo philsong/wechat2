@@ -144,7 +144,7 @@ func (mux *MessageServeMux) eventHandler(eventType EventType) (handler MessageHa
 
 // MessageServeMux 实现了 MessageHandler 接口.
 func (mux *MessageServeMux) ServeMessage(w http.ResponseWriter, r *Request) {
-	fmt.Println("ServeMessage...", r.MixedMsg, MsgType)
+	fmt.Println("ServeMessage...", r.MixedMsg)
 	if MsgType := r.MixedMsg.MsgType; MsgType == "event" {
 		handler := mux.eventHandler(EventType(r.MixedMsg.Event))
 		if handler == nil {

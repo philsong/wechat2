@@ -6,6 +6,7 @@
 package mp
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -18,6 +19,7 @@ type MessageHandler interface {
 type MessageHandlerFunc func(http.ResponseWriter, *Request)
 
 func (fn MessageHandlerFunc) ServeMessage(w http.ResponseWriter, r *Request) {
+	fmt.Println("MessageHandler ServeMessage...")
 	fn(w, r)
 }
 
