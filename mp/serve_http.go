@@ -35,7 +35,7 @@ type RequestHttpBody struct {
 func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 	wechatServer WechatServer, invalidRequestHandler InvalidRequestHandler) {
 
-	fmt.Println("ServeHTTP...", urlValues)
+	fmt.Println("ServeHTTP...", r.Method, urlValues)
 
 	switch r.Method {
 	case "POST": // 消息处理
