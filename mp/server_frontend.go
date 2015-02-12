@@ -6,6 +6,7 @@
 package mp
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 )
@@ -35,11 +36,14 @@ func (frontend *WechatServerFrontend) ServeHTTP(w http.ResponseWriter, r *http.R
 	wechatServer := frontend.wechatServer
 	invalidRequestHandler := frontend.invalidRequestHandler
 
+	fmt.Printf("r.URL.RawQuery=", r.URL.RawQuery)
 	urlValues, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
+		fmt.Printf("err", err)
 		invalidRequestHandler.ServeInvalidRequest(w, r, err)
 		return
 	}
+	fmt.Printf("urlValues=", urlValues)
 
 	ServeHTTP(w, r, urlValues, wechatServer, invalidRequestHandler)
 }
