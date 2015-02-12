@@ -49,10 +49,11 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 		timestamp, err := strconv.ParseInt(timestampStr, 10, 64)
 		if err != nil {
 			err = errors.New("can not parse timestamp to int64: " + timestampStr)
+			fmt.Println("err ''...", err)
 			invalidRequestHandler.ServeInvalidRequest(w, r, err)
 			return
 		}
-
+		fmt.Println("encryptType:", encryptType)
 		switch encryptType {
 		case "aes": // 兼容模式, 安全模式
 			//if len(signature1) != 40 {
