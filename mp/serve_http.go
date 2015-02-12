@@ -53,6 +53,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 			invalidRequestHandler.ServeInvalidRequest(w, r, err)
 			return
 		}
+
 		fmt.Println("encryptType:", encryptType)
 		switch encryptType {
 		case "aes": // 兼容模式, 安全模式
@@ -167,12 +168,12 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				WechatAppId: WechatAppId,
 			}
 
-			fmt.Println("ServeMessage aes.. ''...")
+			fmt.Println("ServeMessage aes.....")
 			wechatServer.MessageHandler().ServeMessage(w, r)
 
 		case "", "raw": // 明文模式
 			// 首先验证签名
-			fmt.Println("raw or ''...")
+
 			if len(signature1) != 40 {
 				err = fmt.Errorf("the length of signature mismatch, have: %d, want: 40", len(signature1))
 				invalidRequestHandler.ServeInvalidRequest(w, r, err)
@@ -229,7 +230,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 				WechatAppId: wechatServer.AppId(),
 			}
 
-			fmt.Println("ServeMessage raw.. ''...")
+			fmt.Println("ServeMessage raw....")
 			wechatServer.MessageHandler().ServeMessage(w, r)
 
 		default: // 未知的加密类型
@@ -257,7 +258,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, urlValues url.Values,
 			invalidRequestHandler.ServeInvalidRequest(w, r, err)
 			return
 		}
-		fmt.Println("echostr.. ''...")
+		fmt.Println("echostr.....")
 		io.WriteString(w, echostr)
 	}
 }

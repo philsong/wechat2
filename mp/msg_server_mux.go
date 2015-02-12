@@ -6,6 +6,7 @@
 package mp
 
 import (
+	"fmt"
 	"net/http"
 	"sync"
 )
@@ -117,6 +118,7 @@ func (mux *MessageServeMux) messageHandler(msgType MessageType) (handler Message
 	defer mux.rwmutex.RUnlock()
 
 	handler = mux.messageHandlers[msgType]
+	fmt.Println("messageHandler...", msgType, handler)
 	if handler != nil {
 		return
 	}
@@ -133,6 +135,7 @@ func (mux *MessageServeMux) eventHandler(eventType EventType) (handler MessageHa
 	defer mux.rwmutex.RUnlock()
 
 	handler = mux.eventHandlers[eventType]
+	fmt.Println("eventHandler...", eventType, handler)
 	if handler != nil {
 		return
 	}
@@ -141,15 +144,18 @@ func (mux *MessageServeMux) eventHandler(eventType EventType) (handler MessageHa
 
 // MessageServeMux 实现了 MessageHandler 接口.
 func (mux *MessageServeMux) ServeMessage(w http.ResponseWriter, r *Request) {
+	fmt.Println("ServeMessage...", r.MixedMsg, MsgType)
 	if MsgType := r.MixedMsg.MsgType; MsgType == "event" {
 		handler := mux.eventHandler(EventType(r.MixedMsg.Event))
 		if handler == nil {
+			fmt.Println("eventHandler nil...", r.MixedMsg, MsgType)
 			return // 返回空串, 符合微信协议
 		}
 		handler.ServeMessage(w, r)
 	} else {
 		handler := mux.messageHandler(MessageType(MsgType))
 		if handler == nil {
+			fmt.Println("messageHandler nil...", r.MixedMsg, MsgType)
 			return // 返回空串, 符合微信协议
 		}
 		handler.ServeMessage(w, r)
